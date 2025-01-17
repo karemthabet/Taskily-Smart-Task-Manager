@@ -16,7 +16,7 @@ Navigator.pushReplacementNamed(context,Home.routeName);
     });
     // ignore: prefer_const_constructors
     return Scaffold(
-      backgroundColor: AppColors.splashBackground,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -27,7 +27,7 @@ Navigator.pushReplacementNamed(context,Home.routeName);
               padding: EdgeInsets.only(bottom: 30),
               child: Text(
                 'Supervised by Kareem Thabet',
-                style: TextStyle(color: AppColors.primaryLightMode,fontSize:19,fontWeight: FontWeight.bold ),
+                style: TextStyle(color: AppColors.primaryColor,fontSize:19,fontWeight: FontWeight.bold ),
               ),
             ),
           )

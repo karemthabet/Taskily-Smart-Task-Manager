@@ -1,0 +1,14 @@
+{
+    "add_New_Task": "Add New Task",
+    "@add_New_Task": {},
+    "settings": "Settings",
+    "@settings": {},
+    "language": "Language",
+    "@language": {},
+    "mode": "Mode",
+    "@mode": {},
+    "edittask": "Edit Task",
+    "@edittask": {},
+    "savechanges": "Save Changes",
+    "@savechanges": {}
+}

@@ -1,0 +1,15 @@
+{
+    "add_New_Task": "إضافة مهمة جديدة",
+    "@add_New_Task": {},
+    "settings": "الإعدادات",
+    "@settings": {},
+    "language": "اللغة",
+    "@language": {},
+    "mode": "الوضع",
+    "@mode": {},
+    "edittask": "تعديل مهمة",
+    "@edittask": {},
+    "savechanges": "حفظ التغيرات",
+    "@savechanges": {}
+    
+}

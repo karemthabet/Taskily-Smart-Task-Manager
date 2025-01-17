@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/UI/utils/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 abstract class AppTheme {
   static ThemeData lightTheme = ThemeData(
@@ -8,14 +9,24 @@ abstract class AppTheme {
       elevation: 0,
       centerTitle: false,
     ),
-    textTheme: const TextTheme(
-      titleLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      titleMedium: TextStyle(
-        color: AppColors.primaryColor,
-        fontWeight: FontWeight.bold,
-        fontSize: 20,
+    textTheme: GoogleFonts.poppinsTextTheme( 
+      const TextTheme(
+        titleLarge: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 25,
+        ),
+        titleMedium: TextStyle(
+          color: AppColors.primaryColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 21,
+        ),
+        titleSmall: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 15
+        ),
       ),
-      titleSmall: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: AppColors.primaryColor,
@@ -51,16 +62,24 @@ abstract class AppTheme {
       elevation: 0,
       centerTitle: false,
     ),
-    textTheme: const TextTheme(
-      titleLarge: TextStyle(
-        color: AppColors.scaffoldBackgroundColorDarkMode,
-        fontWeight: FontWeight.bold,
+    textTheme: GoogleFonts.poppinsTextTheme( 
+      const TextTheme(
+        titleLarge: TextStyle(
+          color: AppColors.scaffoldBackgroundColorDarkMode,
+          fontWeight: FontWeight.bold,
+          fontSize: 25
+        ),
+        titleMedium: TextStyle(
+          color: AppColors.primaryColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 19
+        ),
+        titleSmall: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 15
+        ),
       ),
-      titleMedium: TextStyle(
-        color: AppColors.primaryColor,
-        fontWeight: FontWeight.bold,
-      ),
-      titleSmall: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: AppColors.primaryColor,
@@ -88,7 +107,7 @@ abstract class AppTheme {
       error: Colors.white,
       onError: Colors.white,
       surface: AppColors.scaffoldBackgroundColorDarkMode,
-      onSurface: Colors.white,
+      onSurface: AppColors.primaryColor,
     ),
   );
 }

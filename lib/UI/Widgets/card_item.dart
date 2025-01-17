@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Models/task_model.dart';
 import 'package:todo_app/UI/Screens/edit_screen.dart';
 import 'package:todo_app/UI/utils/app_colors.dart';
+import 'package:todo_app/provider/tasks_provider.dart';
 import 'package:todo_app/remot/firebase_services.dart';
+
 class CardItem extends StatelessWidget {
   const CardItem({super.key, required this.task});
   final TaskModel task;
   @override
   Widget build(BuildContext context) {
+    TasksProvider tasksProvider = Provider.of(context)!;
     return Dismissible(
       key: Key(task.id),
       background: Container(
@@ -22,7 +26,7 @@ class CardItem extends StatelessWidget {
           ],
         ),
       ),
-      secondaryBackground:Container(
+      secondaryBackground: Container(
         color: Colors.blue,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
@@ -57,21 +61,23 @@ class CardItem extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop(false); //No Deleted this item
                   },
-                  child: const Text("Cancel"),
+                  child:  Text("Cancel",style: TextStyle(
+                  color: Theme.of(context).colorScheme.onError,
+                ),),
                 ),
                 TextButton(
                   onPressed: () {
                     FirebaseServices.deleteTask(task.id);
                     Navigator.of(context).pop(true); //Delete this Item
                   },
-                  child: const Text("Delete"),
+                  child:  Text("Delete",style: TextStyle(
+                  color: Theme.of(context).colorScheme.onError,
+                ),),
                 ),
               ],
             ),
           );
-        } 
-        else
-         {
+        } else {
           Navigator.push(context, MaterialPageRoute(
             builder: (context) {
               return EditScreen(
@@ -81,7 +87,10 @@ class CardItem extends StatelessWidget {
           ));
           return false;
         }
-      },direction:task.isDone?  DismissDirection.startToEnd :DismissDirection.horizontal,
+      },
+      direction: task.isDone
+          ? DismissDirection.startToEnd
+          : DismissDirection.horizontal,
       child: Card(
         color: Theme.of(context).colorScheme.onPrimary,
         margin: const EdgeInsets.only(right: 15, left: 15, top: 20),
@@ -120,6 +129,7 @@ class CardItem extends StatelessWidget {
                       FirebaseServices.updateTask(task.id, {
                         "isDone": true,
                       });
+                      tasksProvider.getTasksByDate();
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -129,6 +139,7 @@ class CardItem extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 4),
                       child: const Icon(
+                        color: Colors.white,
                         Icons.check,
                         size: 30,
                       ),

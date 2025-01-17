@@ -1,8 +1,8 @@
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/UI/Models/task_model.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Widgets/card_item.dart';
-import 'package:todo_app/remot/firebase_services.dart';
+import 'package:todo_app/provider/tasks_provider.dart';
 
 class ListTab extends StatefulWidget {
   const ListTab({super.key});
@@ -12,15 +12,11 @@ class ListTab extends StatefulWidget {
 }
 
 class _ListTabState extends State<ListTab> {
-  List<TaskModel> tasks = [];
   EasyInfiniteDateTimelineController? controller =
       EasyInfiniteDateTimelineController();
-  DateTime selectedDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
-    if (tasks.isEmpty) {
-      getTasks();
-    }
+    TasksProvider tasksProvider = Provider.of(context)!;
     return Column(
       children: [
         Padding(
@@ -29,14 +25,13 @@ class _ListTabState extends State<ListTab> {
             showTimelineHeader: false,
             // selectionMode: const SelectionMode.autoCenter(),
             onDateChange: (newDate) {
-              selectedDate = newDate;
-              setState(() {});
+              tasksProvider.changeSelectedDate(newDate);
             },
 
             controller: controller,
-            firstDate: DateTime(2024),
-            focusDate: selectedDate,
-            lastDate: DateTime(2025),
+            firstDate: DateTime(2025),
+            focusDate: tasksProvider.selectedDate,
+            lastDate: DateTime(2040),
             dayProps: EasyDayProps(
               todayStyle: DayStyle(
                 dayStrStyle: TextStyle(
@@ -94,19 +89,13 @@ class _ListTabState extends State<ListTab> {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: tasks.length,
+            itemCount: tasksProvider.taskModels.length,
             itemBuilder: (context, index) {
-              return CardItem(task: tasks[index]);
+              return CardItem(task: tasksProvider.taskModels[index]);
             },
           ),
         ),
       ],
     );
-  }
-
-  getTasks() async {
-    List<TaskModel> allTasks = await FirebaseServices.getTasks();
-    tasks = allTasks;
-    setState(() {});
   }
 }

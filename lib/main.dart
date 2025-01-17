@@ -6,6 +6,7 @@ import 'package:todo_app/UI/utils/app_theme.dart';
 import 'package:todo_app/firebase_options.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:todo_app/provider/language_provider.dart';
+import 'package:todo_app/provider/tasks_provider.dart';
 import 'package:todo_app/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +19,8 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => LanguageProvider(),)
+        ChangeNotifierProvider(create: (context) => LanguageProvider(),),
+        ChangeNotifierProvider(create: (context) => TasksProvider()..getTasksByDate(),)
       ],
       child: const TodoApp(),
     ),

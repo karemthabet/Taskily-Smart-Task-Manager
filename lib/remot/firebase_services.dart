@@ -35,4 +35,16 @@ abstract class FirebaseServices {
         )
         .toList();
   }
+
+  static Future<List<TaskModel>> getTasksByData(DateTime selectedDate) async {
+    CollectionReference<TaskModel> tasksCollection = getTasksCollection();
+    QuerySnapshot<TaskModel> tasksQuery = await tasksCollection
+        .where("date", isEqualTo: Timestamp.fromDate(selectedDate))
+        .get();
+    return tasksQuery.docs
+        .map(
+          (e) => e.data(),
+        )
+        .toList();
+  }
 }

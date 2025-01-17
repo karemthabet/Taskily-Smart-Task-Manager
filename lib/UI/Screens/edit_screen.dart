@@ -100,7 +100,7 @@ textEditingController2 = TextEditingController(text: widget.task.taskDetails);
                           var date = await showDatePicker(
                             context: context,
                             firstDate: DateTime.now(),
-                            initialDate: selectedDate ?? DateTime.now(),
+                            initialDate: selectedDate,
                             lastDate:
                                 DateTime.now().add(const Duration(days: 200)),
                             builder: (BuildContext context, Widget? child) {
@@ -149,6 +149,7 @@ textEditingController2 = TextEditingController(text: widget.task.taskDetails);
                             });
                           }
                         },
+                        // ignore: unnecessary_null_comparison
                         title: selectedDate != null
                             ? "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}"
                             : "Select Date",
@@ -166,6 +167,7 @@ textEditingController2 = TextEditingController(text: widget.task.taskDetails);
                       "taskDetails": textEditingController2.text,
                       "date": selectedDate,
                     });
+                    // ignore: use_build_context_synchronously
                     Navigator.pop(context);
                   },
                   title: AppLocalizations.of(context)!.savechanges,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Widgets/buttom_sheet_form.dart';
 import 'package:todo_app/UI/Widgets/scaffold_custom.dart';
+import 'package:todo_app/provider/tasks_provider.dart';
 import 'package:todo_app/tabs/list_tabs/list_tab.dart';
 import 'package:todo_app/tabs/settings_tabs/settings_tab.dart';
 
@@ -32,20 +34,31 @@ class _HomeState extends State<Home> {
           ),
         ),
         floatingActionButton: selectedIndex == 0
-            ? FloatingActionButton(
-                child: const Icon(Icons.add, size: 30),
-                onPressed: () {
-                  showModalBottomSheet(
-                    showDragHandle: true,
-                    context: context,
-                    builder: (context) {
-                      return const ButtomSheetForm();
+    ? FloatingActionButton(
+        child: const Icon(Icons.add, size: 30),
+        onPressed: () {
+          final provider = Provider.of<TasksProvider>(context, listen: false);
+          final selectedDate = provider.selectedDate;
+          final today = DateTime.now();
+          if (selectedDate.isBefore(DateTime(today.year, today.month, today.day))) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('You Cannot Add new Tasks before Today',style: TextStyle(color: Colors.black,fontSize: 20),),
+              ),
+            );
+            return;
+          }
+          showModalBottomSheet(
+            showDragHandle: true,
+            context: context,
+            builder: (context) {
+              return const ButtomSheetForm();
+            },
+          );
+        },
+      )
+    : null,
 
-                    },
-                  );
-                },
-              )
-            : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: BottomAppBar(
           shape: const CircularNotchedRectangle(),

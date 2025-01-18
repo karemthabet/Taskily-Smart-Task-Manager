@@ -65,7 +65,8 @@ class _ButtomSheetFormState extends State<ButtomSheetForm> {
                   validator: (data) {
                     if (data == null || data.isEmpty) {
                       return "Please enter your task details, cannot be empty";
-                    } else if (data.length < 5) {
+                    } 
+                    else if (data.length < 5) {
                       return "Please enter more details about your task";
                     }
                     return null;

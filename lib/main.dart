@@ -10,6 +10,8 @@ import 'package:todo_app/provider/language_provider.dart';
 import 'package:todo_app/provider/tasks_provider.dart';
 import 'package:todo_app/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/views/sign%20in_screen/sign_in.dart';
+import 'package:todo_app/views/signup_screen/sign_up.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,8 +53,10 @@ class _TodoAppState extends State<TodoApp> {
       routes: {
         Splash.routeName: (context) => const Splash(),
         Home.routeName: (context) => const Home(),
+        SignIn.routeName:(context)=>const SignIn(),
+        SignUp.routeName:(context)=>const SignUp(),
       },
-      initialRoute: Home.routeName,
+      initialRoute: SignIn.routeName,
     );
   }
 }

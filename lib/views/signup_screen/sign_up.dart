@@ -1,6 +1,10 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
+import 'package:todo_app/UI/Models/user_data_model.dart';
 import 'package:todo_app/UI/Widgets/textfield_auth.dart';
 import 'package:todo_app/UI/utils/app_colors.dart';
+import 'package:todo_app/remot/firebase_services.dart';
 import 'package:todo_app/views/sign%20in_screen/sign_in.dart';
 
 class SignUp extends StatefulWidget {
@@ -8,14 +12,14 @@ class SignUp extends StatefulWidget {
   static const String routeName = "signup";
 
   @override
-  State<SignUp> createState() => _SignInState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _SignInState extends State<SignUp> {
-  TextEditingController emailcontroller = TextEditingController();
-  TextEditingController passwordcontroller = TextEditingController();
-  TextEditingController namecontroller = TextEditingController();
-  GlobalKey<FormState> formkey = GlobalKey();
+class _SignUpState extends State<SignUp> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,7 @@ class _SignInState extends State<SignUp> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Form(
-            key: formkey,
+            key: formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -59,12 +63,11 @@ class _SignInState extends State<SignUp> {
                 ),
                 const SizedBox(height: 30),
                 TextfieldAuth(
-                  textEditingController: namecontroller,
+                  textEditingController: nameController,
                   validator: (data) {
                     if (data == null || data.isEmpty) {
-                      return 'Please enter Your name';
+                      return 'Please enter your name';
                     }
-
                     return null;
                   },
                   hintText: 'Enter your Name',
@@ -74,9 +77,8 @@ class _SignInState extends State<SignUp> {
                   ),
                   maxTextLines: null,
                 ),
-                // Email TextField with Validator
                 TextfieldAuth(
-                  textEditingController: emailcontroller,
+                  textEditingController: emailController,
                   validator: (data) {
                     if (data == null || data.isEmpty) {
                       return 'Please enter an email address';
@@ -96,14 +98,12 @@ class _SignInState extends State<SignUp> {
                   maxTextLines: null,
                   keyboardType: TextInputType.emailAddress,
                 ),
-                // Password TextField with Validator
                 TextfieldAuth(
-                  textEditingController: passwordcontroller,
+                  textEditingController: passwordController,
                   validator: (data) {
                     if (data == null || data.isEmpty) {
                       return 'Please enter a password';
                     }
-                    // Password should be at least 8 characters
                     if (data.length < 8) {
                       return 'Password must be at least 8 characters long';
                     }
@@ -117,7 +117,6 @@ class _SignInState extends State<SignUp> {
                   ),
                   maxTextLines: null,
                 ),
-
                 const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -128,8 +127,13 @@ class _SignInState extends State<SignUp> {
                     ),
                   ),
                   onPressed: () {
-                    if (formkey.currentState?.validate() == true) {
-                      //Signup with firebase
+                    if (formKey.currentState!.validate() == true) {
+                      FirebaseServices.register(
+                          UserDataModel(
+                              email: emailController.text,
+                              name: nameController.text),
+                          passwordController.text,
+                          context);
                     }
                   },
                   child: const Center(

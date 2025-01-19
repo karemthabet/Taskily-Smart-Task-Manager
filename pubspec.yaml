@@ -45,6 +45,7 @@ dependencies:
   intl: any
   google_fonts: 
   font_awesome_flutter: ^10.8.0
+  firebase_auth: ^5.4.0
 
 dev_dependencies:
   flutter_test:

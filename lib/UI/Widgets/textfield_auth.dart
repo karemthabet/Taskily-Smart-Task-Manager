@@ -40,7 +40,7 @@ class _TextfieldAuthState extends State<TextfieldAuth> {
         maxLines: widget.maxTextLines ?? 1,
         controller: widget.textEditingController ,
         cursorColor: AppColors.primaryColor,
-        obscureText: showPassword, // Toggle password visibility without clearing text
+        obscureText: widget.obscureText && !showPassword, // Toggle password visibility without clearing text
         style: const TextStyle(
           color: Colors.black,
           fontSize: 18,
@@ -86,7 +86,7 @@ class _TextfieldAuthState extends State<TextfieldAuth> {
                     });
                   },
                   icon: Icon(
-                    showPassword == false ? Icons.visibility : Icons.visibility_off,
+                    showPassword == true ? Icons.visibility : Icons.visibility_off,
                     color: Colors.black,
                   ),
                 )

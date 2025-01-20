@@ -9,7 +9,7 @@ class Splash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 3),(){
+    Future.delayed(const Duration(seconds: 5),(){
       
 // ignore: use_build_context_synchronously
 Navigator.pushReplacementNamed(context,SignIn.routeName);

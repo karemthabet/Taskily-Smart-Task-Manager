@@ -46,6 +46,15 @@ dependencies:
   google_fonts: 
   font_awesome_flutter: ^10.8.0
   firebase_auth: ^5.4.0
+  icons_launcher: ^3.0.0
+
+icons_launcher:
+  image_path: "assets/images/logosss.png"
+  platforms:
+    android:
+      enable: true
+    ios:
+      enable: true
 
 dev_dependencies:
   flutter_test:

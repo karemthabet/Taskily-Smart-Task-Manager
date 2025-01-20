@@ -1,10 +1,10 @@
 // ignore_for_file: unused_local_variable
 
 import 'package:flutter/material.dart';
-import 'package:todo_app/UI/Models/user_data_model.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Widgets/textfield_auth.dart';
 import 'package:todo_app/UI/utils/app_colors.dart';
-import 'package:todo_app/remot/firebase_services.dart';
+import 'package:todo_app/provider/auth_provider.dart';
 import 'package:todo_app/views/sign%20in_screen/sign_in.dart';
 
 class SignUp extends StatefulWidget {
@@ -25,9 +25,10 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: true,
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
-        title: const Text("Sign Up"),
+        title: const Text("Sign Up",style:TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -44,12 +45,14 @@ class _SignUpState extends State<SignUp> {
                   height: 120,
                 ),
                 const SizedBox(height: 30),
-                const Text(
+                Text(
                   "Let's Get Started!",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 28,
-                    color: Colors.black,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black, 
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -126,14 +129,15 @@ class _SignUpState extends State<SignUp> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {
-                    if (formKey.currentState!.validate() == true) {
-                      FirebaseServices.register(
-                          UserDataModel(
-                              email: emailController.text,
-                              name: nameController.text),
-                          passwordController.text,
-                          context);
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      await Provider.of<LocalAuthProvider>(context,
+                              listen: false)
+                          .register(
+                              emailController.text,
+                              passwordController.text,
+                              context,
+                              nameController.text);
                     }
                   },
                   child: const Center(
@@ -151,9 +155,9 @@ class _SignUpState extends State<SignUp> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                     Text(
                       "Already have an account?",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color:Theme.of(context).brightness==Brightness.light? Colors.black:Colors.white),
                     ),
                     TextButton(
                       onPressed: () {

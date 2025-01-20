@@ -2,23 +2,34 @@
 
 // ignore_for_file: unused_local_variable
 
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Models/task_model.dart';
 import 'package:todo_app/UI/Models/user_data_model.dart';
 import 'package:todo_app/UI/Screens/home.dart';
 import 'package:todo_app/UI/utils/constants%20_managers.dart';
 import 'package:todo_app/UI/utils/diaglogs.dart';
+import 'package:todo_app/provider/tasks_provider.dart';
 import 'package:todo_app/views/sign%20in_screen/sign_in.dart';
 
 abstract class FirebaseServices {
   static CollectionReference<TaskModel> getTasksCollection() =>
-      FirebaseFirestore.instance.collection("Tasks").withConverter<TaskModel>(
+      getUserCollection()
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection("Tasks")
+          .withConverter<TaskModel>(
             fromFirestore: (snapshot, _) =>
                 TaskModel.fromJson(snapshot.data()!),
+            toFirestore: (value, _) => value.toJson(),
+          );
+  static CollectionReference<UserDataModel> getUserCollection() =>
+      FirebaseFirestore.instance
+          .collection("Users")
+          .withConverter<UserDataModel>(
+            fromFirestore: (snapshot, _) =>
+                UserDataModel.fromJson(snapshot.data()!),
             toFirestore: (value, _) => value.toJson(),
           );
 
@@ -82,10 +93,16 @@ abstract class FirebaseServices {
         email: userDataModel.email!,
         password: password,
       );
+
+      userDataModel.id = credential.user!.uid; // حفظ الـ UID
+
+      await getUserCollection().doc(userDataModel.id).set(userDataModel);
+
       Diaglogs.hide(context);
       Diaglogs.showMessage(context,
-          body: "User register successfully",
+          body: "User registered successfully",
           posActionTitle: "OK", posAction: () {
+        Provider.of<TasksProvider>(context,listen: false).getTasksByDate();
         Navigator.pushReplacementNamed(context, SignIn.routeName);
       });
     } on FirebaseAuthException catch (e) {
@@ -97,54 +114,81 @@ abstract class FirebaseServices {
         message = 'The account already exists for that email.';
       }
       Diaglogs.showMessage(context,
-          title: "Error Occured",
+          title: "Error Occurred",
           body: message,
           posActionTitle: "OK", posAction: () {
         Navigator.pop(context);
       });
     } catch (e) {
       Diaglogs.hide(context);
-      Diaglogs.showMessage(context, title: "Error Occured", body: e.toString());
+      Diaglogs.showMessage(context,
+          title: "Error Occurred", body: e.toString());
     }
   }
 
- 
- static Future signIn(
-    UserDataModel userDataModel, String password, context) async {
-  try {
-    Diaglogs.showLoading(context, message: "Wait...");
-    UserCredential credential =
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: userDataModel.email!,
-      password: password,
-    );
-    Diaglogs.hide(context);
-    Diaglogs.showMessage(context,
-        body: "User logged in successfully",
-        posActionTitle: "OK", posAction: () {
-      Navigator.pushReplacementNamed(context, Home.routeName);
-    });
-  } on FirebaseAuthException catch (e) {
-    Diaglogs.hide(context);
-   late String message;
-    if (e.code == ConstantsManagers.invalidcredential) {
-      message="Wrong email or password";
-    } 
-    Diaglogs.showMessage(context,
-        title: "Error Occurred",
-        body: message,
-        posActionTitle: "OK", posAction: () {
-      Navigator.pop(context);
-    });
-  } catch (e) {
-    Diaglogs.hide(context);
-    Diaglogs.showMessage(context, title: "Error Occurred", body: e.toString());
+  static Future signIn(
+      UserDataModel userDataModel, String password, context) async {
+    try {
+      Diaglogs.showLoading(context, message: "Wait...");
+      UserCredential credential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: userDataModel.email!,
+        password: password,
+      );
+
+      String userId = credential.user!.uid;
+
+      UserDataModel? userData = await getUser(userId);
+
+      if (userData != null) {
+        Diaglogs.hide(context);
+        Diaglogs.showMessage(context,
+            body: "User logged in successfully",
+            posActionTitle: "OK", posAction: () {
+          Provider.of<TasksProvider>(context,listen: false).getTasksByDate();
+
+          Navigator.popAndPushNamed(context, Home.routeName);
+        });
+      } else {
+        Diaglogs.hide(context);
+        Diaglogs.showMessage(context,
+            title: "Error Occurred",
+            body: "User data not found.",
+            posActionTitle: "OK", posAction: () {
+          Navigator.pop(context);
+        });
+      }
+    } on FirebaseAuthException catch (e) {
+      Diaglogs.hide(context);
+      late String message;
+      if (e.code == ConstantsManagers.invalidcredential) {
+        message = "Wrong email or password";
+      }
+      Diaglogs.showMessage(context,
+          title: "Error Occurred",
+          body: message,
+          posActionTitle: "OK", posAction: () {
+        Navigator.pop(context);
+      });
+    } catch (e) {
+      Diaglogs.hide(context);
+      Diaglogs.showMessage(context,
+          title: "Error Occurred", body: e.toString());
+    }
   }
+
+  static Future<UserDataModel?> getUser(String userId) async {
+    try {
+      DocumentSnapshot<UserDataModel> userDoc =
+          await getUserCollection().doc(userId).get();
+
+      return userDoc.data();
+    } catch (e) {
+      throw Exception("Error fetching user data: $e");
+    }
+  }
+static Future logout()async{
+  await FirebaseAuth.instance.signOut();
 }
-
-
-  
-
-
 
 }

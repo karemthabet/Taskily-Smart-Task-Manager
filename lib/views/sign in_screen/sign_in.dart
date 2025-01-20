@@ -2,14 +2,11 @@
 
 // ignore_for_file: unused_local_variable, non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:todo_app/UI/Models/user_data_model.dart';
-import 'package:todo_app/UI/Screens/home.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Widgets/textfield_auth.dart';
 import 'package:todo_app/UI/utils/app_colors.dart';
-import 'package:todo_app/remot/firebase_services.dart';
+import 'package:todo_app/provider/auth_provider.dart';
 import 'package:todo_app/views/signup_screen/sign_up.dart';
 
 class SignIn extends StatefulWidget {
@@ -29,9 +26,10 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
-        title: const Text("Sign In"),
+        title:  const Text("Sign In",style:TextStyle(color: Colors.white) ,),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -48,12 +46,12 @@ class _SignInState extends State<SignIn> {
                   height: 120,
                 ),
                 const SizedBox(height: 30),
-                const Text(
+                 Text(
                   "Welcome Back!",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 28,
-                    color: Colors.black,
+                    color: Theme.of(context).brightness==Brightness.light? Colors.black:Colors.white,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -108,9 +106,9 @@ class _SignInState extends State<SignIn> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {},
-                    child: const Text(
+                    child:  Text(
                       "Forgot Password?",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: Theme.of(context).brightness==Brightness.light? Colors.black:Colors.white),
                     ),
                   ),
                 ),
@@ -125,10 +123,11 @@ class _SignInState extends State<SignIn> {
                   ),
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      await FirebaseServices.signIn(
-                          UserDataModel(email: emailController.text),
-                          passwordController.text,
-                          context);
+                      Provider.of<LocalAuthProvider>(context,listen: false).signIn(
+                        emailController.text,
+                        passwordController.text,
+                        context,
+                      );
                     }
                   },
                   child: const Center(
@@ -143,9 +142,9 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                const Text(
+                 Text(
                   "Don’t have an account?",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: Theme.of(context).brightness==Brightness.dark?Colors.white:Colors.black),
                 ),
                 TextButton(
                   onPressed: () {

@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/UI/Screens/home.dart';
@@ -6,6 +6,7 @@ import 'package:todo_app/UI/Screens/splash.dart';
 import 'package:todo_app/UI/utils/app_theme.dart';
 import 'package:todo_app/firebase_options.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:todo_app/provider/auth_provider.dart';
 import 'package:todo_app/provider/language_provider.dart';
 import 'package:todo_app/provider/tasks_provider.dart';
 import 'package:todo_app/provider/theme_provider.dart';
@@ -23,7 +24,8 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => LanguageProvider(),),
-        ChangeNotifierProvider(create: (context) => TasksProvider()..getTasksByDate(),)
+        ChangeNotifierProvider(create: (context) => TasksProvider()),
+        ChangeNotifierProvider(create: (context) => LocalAuthProvider()),
       ],
       child: const TodoApp(),
     ),
@@ -56,7 +58,10 @@ class _TodoAppState extends State<TodoApp> {
         SignIn.routeName:(context)=>const SignIn(),
         SignUp.routeName:(context)=>const SignUp(),
       },
-      initialRoute: SignIn.routeName,
+      // ignore: unnecessary_null_comparison
+initialRoute: FirebaseAuth.instance.currentUser?.uid== null
+    ? Splash.routeName
+    :Home.routeName,
     );
   }
 }

@@ -25,7 +25,7 @@ class _HomeState extends State<Home> {
       child: ScaffoldCustom(
         body: tabs[selectedIndex],
         appBar: AppBar(
-         // automaticallyImplyLeading: false,
+         automaticallyImplyLeading: false,
           title: Padding(
             padding: const EdgeInsets.only(left: 25, top: 20),
             child: Text(

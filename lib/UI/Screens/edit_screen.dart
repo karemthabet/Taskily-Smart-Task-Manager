@@ -144,6 +144,7 @@ class _EditScreenState extends State<EditScreen> {
                               });
                             }
                           },
+                          // ignore: unnecessary_null_comparison
                           title: selectedDate != null
                               ? "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}"
                               : "Select Date",

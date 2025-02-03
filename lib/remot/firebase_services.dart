@@ -5,6 +5,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Models/task_model.dart';
 import 'package:todo_app/UI/Models/user_data_model.dart';
@@ -15,15 +16,13 @@ import 'package:todo_app/provider/tasks_provider.dart';
 import 'package:todo_app/views/sign%20in_screen/sign_in.dart';
 
 abstract class FirebaseServices {
-  static CollectionReference<TaskModel> getTasksCollection() =>
-      getUserCollection()
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection("Tasks")
-          .withConverter<TaskModel>(
-            fromFirestore: (snapshot, _) =>
-                TaskModel.fromJson(snapshot.data()!),
-            toFirestore: (value, _) => value.toJson(),
-          );
+  static CollectionReference<TaskModel> getTasksCollection() => getUserCollection()
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection("Tasks")
+      .withConverter<TaskModel>(
+        fromFirestore: (snapshot, _) => TaskModel.fromJson(snapshot.data()!),
+        toFirestore: (value, _) => value.toJson(),
+      ); // aim to catch  tasks collection and create sub collection tasks in collection users
   static CollectionReference<UserDataModel> getUserCollection() =>
       FirebaseFirestore.instance
           .collection("Users")
@@ -31,14 +30,15 @@ abstract class FirebaseServices {
             fromFirestore: (snapshot, _) =>
                 UserDataModel.fromJson(snapshot.data()!),
             toFirestore: (value, _) => value.toJson(),
-          );
+          ); // aim to catch  user collection
 
   static Future<void> addTask(TaskModel task) async {
     try {
-      final tasksCollection = getTasksCollection();
-      final doc = tasksCollection.doc();
-      task.id = doc.id;
-      await doc.set(task);
+      final tasksCollection = getTasksCollection(); //in collection
+      final doc =
+          tasksCollection.doc(); //create doc and generate auto id for doc
+      task.id = doc.id; //assign auto id to task id
+      await doc.set(task); //add task model to fire store
     } catch (e) {
       throw Exception("Error adding task: $e");
     }
@@ -93,16 +93,15 @@ abstract class FirebaseServices {
         email: userDataModel.email!,
         password: password,
       );
-
       userDataModel.id = credential.user!.uid; // حفظ الـ UID
 
       await getUserCollection().doc(userDataModel.id).set(userDataModel);
 
       Diaglogs.hide(context);
       Diaglogs.showMessage(context,
-          body: "User registered successfully",
+          body: "Account created! Please verify your email before logging in.",
           posActionTitle: "OK", posAction: () {
-        Provider.of<TasksProvider>(context,listen: false).getTasksByDate();
+        Provider.of<TasksProvider>(context, listen: false).getTasksByDate();
         Navigator.pushReplacementNamed(context, SignIn.routeName);
       });
     } on FirebaseAuthException catch (e) {
@@ -130,29 +129,50 @@ abstract class FirebaseServices {
       UserDataModel userDataModel, String password, context) async {
     try {
       Diaglogs.showLoading(context, message: "Wait...");
+
       UserCredential credential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: userDataModel.email!,
         password: password,
       );
 
-      String userId = credential.user!.uid;
+      User? user = FirebaseAuth.instance.currentUser;
+      await user?.reload(); // تحديث حالة المستخدم
+      user = FirebaseAuth.instance.currentUser;
 
-      UserDataModel? userData = await getUser(userId);
-
-      if (userData != null) {
-        Diaglogs.hide(context);
-        Diaglogs.showMessage(context,
-            body: "User logged in successfully",
-            posActionTitle: "OK", posAction: () {
-          Provider.of<TasksProvider>(context,listen: false).getTasksByDate();
-
-          Navigator.popAndPushNamed(context, Home.routeName);
-        });
+      if (user != null) {
+        if (user.emailVerified) {
+          Diaglogs.hide(context);
+          Diaglogs.showMessage(context,
+              body: "User logged in successfully",
+              posActionTitle: "OK", posAction: () {
+            Provider.of<TasksProvider>(context, listen: false).getTasksByDate();
+            Navigator.popAndPushNamed(context, Home.routeName);
+          });
+        } else {
+          Diaglogs.hide(context);
+          Diaglogs.showMessage(context,
+              title: "Email Verification Required",
+              body:
+                  "Your email is not verified. Please verify your email before logging in.",
+              posAction: () async {
+                await user!.sendEmailVerification();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text(
+                          "Verification email sent. Please check your inbox.")),
+                );
+                Navigator.pop(context);
+              },
+              negActionTitle: "OK",
+              negAction: () {
+                Navigator.pop(context);
+              });
+        }
       } else {
         Diaglogs.hide(context);
         Diaglogs.showMessage(context,
-            title: "Error Occurred",
+            title: "Error",
             body: "User data not found.",
             posActionTitle: "OK", posAction: () {
           Navigator.pop(context);
@@ -160,10 +180,12 @@ abstract class FirebaseServices {
       }
     } on FirebaseAuthException catch (e) {
       Diaglogs.hide(context);
-      late String message;
+      String message = "An error occurred";
+
       if (e.code == ConstantsManagers.invalidcredential) {
         message = "Wrong email or password";
       }
+
       Diaglogs.showMessage(context,
           title: "Error Occurred",
           body: message,
@@ -187,8 +209,8 @@ abstract class FirebaseServices {
       throw Exception("Error fetching user data: $e");
     }
   }
-static Future logout()async{
-  await FirebaseAuth.instance.signOut();
-}
 
+  static Future logout() async {
+    await FirebaseAuth.instance.signOut();
+  }
 }

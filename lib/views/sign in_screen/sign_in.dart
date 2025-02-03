@@ -2,8 +2,12 @@
 
 // ignore_for_file: unused_local_variable, non_constant_identifier_names
 
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/UI/Screens/home.dart';
 import 'package:todo_app/UI/Widgets/textfield_auth.dart';
 import 'package:todo_app/UI/utils/app_colors.dart';
 import 'package:todo_app/provider/auth_provider.dart';
@@ -29,7 +33,10 @@ class _SignInState extends State<SignIn> {
         automaticallyImplyLeading: false,
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
-        title:  const Text("Sign In",style:TextStyle(color: Colors.white) ,),
+        title: const Text(
+          "Sign In",
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -46,12 +53,14 @@ class _SignInState extends State<SignIn> {
                   height: 120,
                 ),
                 const SizedBox(height: 30),
-                 Text(
+                Text(
                   "Welcome Back!",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 28,
-                    color: Theme.of(context).brightness==Brightness.light? Colors.black:Colors.white,
+                    color: Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -105,10 +114,75 @@ class _SignInState extends State<SignIn> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
-                    child:  Text(
+                    onPressed: () {
+                      if (emailController.text == "") {
+                        AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.error,
+                          animType: AnimType.rightSlide,
+                          title: 'Error',
+                          desc:
+                              'Email cannot be Empty', // النص الذي سيظهر في الـ Dialog
+                          btnOkText: "OK", // نص زر OK
+                          btnOkColor: Colors.red, // اللون الأحمر للزر
+                          btnOkOnPress: () {
+                            Navigator.of(context)
+                                .popAndPushNamed(SignIn.routeName);
+                          },
+                          titleTextStyle: const TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                          descTextStyle: const TextStyle(color: Colors.red),
+                        ).show();
+                      } else {
+                        try {
+                          FirebaseAuth.instance.sendPasswordResetEmail(
+                              email: emailController.text);
+                          AwesomeDialog(
+                            context: context,
+                            dialogType: DialogType.error,
+                            animType: AnimType.rightSlide,
+                            title: '',
+                            desc:
+                                'check your email and add new password', // النص الذي سيظهر في الـ Dialog
+                            btnOkText: "OK", // نص زر OK
+                            btnOkColor:
+                                AppColors.primaryColor, // اللون الأحمر للزر
+                            btnOkOnPress: () {
+                              Navigator.of(context)
+                                  .popAndPushNamed(SignIn.routeName);
+                            },
+                            titleTextStyle: const TextStyle(
+                                color: Colors.red, fontWeight: FontWeight.bold),
+                            descTextStyle: const TextStyle(color: Colors.red),
+                          ).show();
+                        } catch (e) {
+                          AwesomeDialog(
+                            context: context,
+                            dialogType: DialogType.error,
+                            animType: AnimType.rightSlide,
+                            title: 'Error',
+                            desc:
+                                'Email cannot be Empty', // النص الذي سيظهر في الـ Dialog
+                            btnOkText: "OK", // نص زر OK
+                            btnOkColor: Colors.red, // اللون الأحمر للزر
+                            btnOkOnPress: () {
+                              Navigator.of(context)
+                                  .popAndPushNamed(SignIn.routeName);
+                            },
+                            titleTextStyle: const TextStyle(
+                                color: Colors.red, fontWeight: FontWeight.bold),
+                            descTextStyle: const TextStyle(color: Colors.red),
+                          ).show();
+                        }
+                      }
+                    },
+                    child: Text(
                       "Forgot Password?",
-                      style: TextStyle(color: Theme.of(context).brightness==Brightness.light? Colors.black:Colors.white),
+                      style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white),
                     ),
                   ),
                 ),
@@ -123,7 +197,8 @@ class _SignInState extends State<SignIn> {
                   ),
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      Provider.of<LocalAuthProvider>(context,listen: false).signIn(
+                      Provider.of<LocalAuthProvider>(context, listen: false)
+                          .signIn(
                         emailController.text,
                         passwordController.text,
                         context,
@@ -142,9 +217,12 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                 Text(
+                Text(
                   "Don’t have an account?",
-                  style: TextStyle(color: Theme.of(context).brightness==Brightness.dark?Colors.white:Colors.black),
+                  style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black),
                 ),
                 TextButton(
                   onPressed: () {
@@ -156,6 +234,7 @@ class _SignInState extends State<SignIn> {
                     style: TextStyle(color: AppColors.primaryColor),
                   ),
                 ),
+               
               ],
             ),
           ),

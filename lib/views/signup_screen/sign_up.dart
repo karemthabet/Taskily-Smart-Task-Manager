@@ -1,5 +1,6 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Widgets/textfield_auth.dart';
@@ -28,7 +29,7 @@ class _SignUpState extends State<SignUp> {
         automaticallyImplyLeading: true,
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
-        title: const Text("Sign Up",style:TextStyle(color: Colors.white)),
+        title: const Text("Sign Up", style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -52,7 +53,7 @@ class _SignUpState extends State<SignUp> {
                     fontSize: 28,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white
-                        : Colors.black, 
+                        : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -131,13 +132,20 @@ class _SignUpState extends State<SignUp> {
                   ),
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      await Provider.of<LocalAuthProvider>(context,
-                              listen: false)
-                          .register(
-                              emailController.text,
-                              passwordController.text,
-                              context,
-                              nameController.text);
+                      
+                        await Provider.of<LocalAuthProvider>(context,
+                                listen: false)
+                            .register(
+                                emailController.text,
+                                passwordController.text,
+                                context,
+                                nameController.text);
+
+                        await FirebaseAuth.instance.currentUser!
+                            .sendEmailVerification();
+
+                     
+                       
                     }
                   },
                   child: const Center(
@@ -155,9 +163,13 @@ class _SignUpState extends State<SignUp> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                     Text(
+                    Text(
                       "Already have an account?",
-                      style: TextStyle(color:Theme.of(context).brightness==Brightness.light? Colors.black:Colors.white),
+                      style: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.black
+                                  : Colors.white),
                     ),
                     TextButton(
                       onPressed: () {

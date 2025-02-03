@@ -20,6 +20,8 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return Directionality(
       textDirection: TextDirection.ltr,
       child: ScaffoldCustom(
@@ -44,6 +46,7 @@ class _HomeState extends State<Home> {
           if (selectedDate.isBefore(DateTime(today.year, today.month, today.day))) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
+                duration: Duration(milliseconds: 400),
                 content: Text('You Cannot Add new Tasks before Today',style: TextStyle(color: Colors.black,fontSize: 20),),
               ),
             );

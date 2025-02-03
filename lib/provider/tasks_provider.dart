@@ -16,7 +16,7 @@ class TasksProvider with ChangeNotifier {
 
   Future<void> addTask(TaskModel newTask) async {
     try {
-      await FirebaseServices.addTask(newTask);
+      await FirebaseServices.addTask(newTask).timeout(const Duration(milliseconds:500 ));
       changeSelectedDate(selectedDate);
       getTasksByDate();
       notifyListeners();

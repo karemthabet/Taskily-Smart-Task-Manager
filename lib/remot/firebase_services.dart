@@ -66,7 +66,7 @@ static Stream<List<TaskModel>> getTasksByData(DateTime selectedDate) async* {
 
  static Future<void> updateTask(String id, Map<String, dynamic> data) async {
   try {
-    final tasksCollection = getTasksCollection(); // استخدام getTasksCollection بدلاً من getTasksByData
+    final tasksCollection = getTasksCollection();
     await tasksCollection.doc(id).update(data);
   } catch (e) {
     throw Exception("Error updating task: $e");
@@ -179,14 +179,14 @@ static Stream<List<TaskModel>> getTasksByData(DateTime selectedDate) async* {
       }
     } on FirebaseAuthException catch (e) {
       Diaglogs.hide(context);
-      String message = "An error occurred";
+      String message = "Check Your internet";
 
       if (e.code == ConstantsManagers.invalidcredential) {
         message = "Wrong email or password";
       }
 
       Diaglogs.showMessage(context,
-          title: " an  Error Occurred",
+          title: " Error Occurred",
           body: message,
           posActionTitle: "OK", posAction: () {
         Navigator.pop(context);

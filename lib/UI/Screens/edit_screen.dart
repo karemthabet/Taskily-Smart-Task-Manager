@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/developer.dart';
+
 import 'package:flutter/material.dart';
 import 'package:todo_app/UI/Models/task_model.dart';
 import 'package:todo_app/UI/Widgets/custom_elevated_button.dart';
@@ -26,6 +28,8 @@ class _EditScreenState extends State<EditScreen> {
     super.initState();
     textEditingController1 = TextEditingController(text: widget.task.taskName);
     textEditingController2 = TextEditingController(text: widget.task.taskDetails);
+      DateTime selectedDate = DateTime.now();
+
   }
 
   @override
@@ -144,7 +148,6 @@ class _EditScreenState extends State<EditScreen> {
                               });
                             }
                           },
-                          // ignore: unnecessary_null_comparison
                           title: selectedDate != null
                               ? "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}"
                               : "Select Date",
@@ -158,9 +161,10 @@ class _EditScreenState extends State<EditScreen> {
                       await FirebaseServices.updateTask(widget.task.id, {
                         "taskName": textEditingController1.text,
                         "taskDetails": textEditingController2.text,
-                        "date": selectedDate,
+                        "date": selectedDate.toString(),
                       });
                       Navigator.pop(context);
+                      // log (selectedDate);
                     },
                     title: AppLocalizations.of(context)!.savechanges,
                   ),

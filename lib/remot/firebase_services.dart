@@ -5,7 +5,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Models/task_model.dart';
 import 'package:todo_app/UI/Models/user_data_model.dart';
@@ -44,17 +43,17 @@ abstract class FirebaseServices {
     }
   }
 
-  static Future<List<TaskModel>> getTasksByData(DateTime selectedDate) async {
-    CollectionReference<TaskModel> tasksCollection = getTasksCollection();
-    QuerySnapshot<TaskModel> tasksQuery = await tasksCollection
-        .where("date", isEqualTo: Timestamp.fromDate(selectedDate))
-        .get();
-    return tasksQuery.docs
-        .map(
-          (e) => e.data(),
-        )
-        .toList();
-  }
+static Stream<List<TaskModel>> getTasksByData(DateTime selectedDate) async* {
+  CollectionReference<TaskModel> tasksCollection = getTasksCollection();
+  Stream<QuerySnapshot<TaskModel>> tasksQuery = tasksCollection
+      .where("date", isEqualTo: Timestamp.fromDate(selectedDate))
+      .snapshots();
+  yield* tasksQuery.map((event) => event.docs
+      .map(
+        (e) => e.data(),
+      )
+      .toList());
+}
 
   static Future<void> deleteTask(String id) async {
     try {
@@ -65,14 +64,14 @@ abstract class FirebaseServices {
     }
   }
 
-  static Future<void> updateTask(String id, Map<String, dynamic> data) async {
-    try {
-      final tasksCollection = getTasksCollection();
-      await tasksCollection.doc(id).update(data);
-    } catch (e) {
-      throw Exception("Error updating task: $e");
-    }
+ static Future<void> updateTask(String id, Map<String, dynamic> data) async {
+  try {
+    final tasksCollection = getTasksCollection(); // استخدام getTasksCollection بدلاً من getTasksByData
+    await tasksCollection.doc(id).update(data);
+  } catch (e) {
+    throw Exception("Error updating task: $e");
   }
+}
 
   static Future<List<TaskModel>> getTasks() async {
     try {
@@ -158,7 +157,7 @@ abstract class FirebaseServices {
               posAction: () async {
                 await user!.sendEmailVerification();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                       content: Text(
                           "Verification email sent. Please check your inbox.")),
                 );
@@ -187,7 +186,7 @@ abstract class FirebaseServices {
       }
 
       Diaglogs.showMessage(context,
-          title: "Error Occurred",
+          title: " an  Error Occurred",
           body: message,
           posActionTitle: "OK", posAction: () {
         Navigator.pop(context);

@@ -5,9 +5,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/UI/Screens/home.dart';
 import 'package:todo_app/UI/Widgets/textfield_auth.dart';
 import 'package:todo_app/UI/utils/app_colors.dart';
 import 'package:todo_app/provider/auth_provider.dart';
@@ -139,7 +137,7 @@ class _SignInState extends State<SignIn> {
                               email: emailController.text);
                           AwesomeDialog(
                             context: context,
-                            dialogType: DialogType.error,
+                            dialogType: DialogType.info,
                             animType: AnimType.rightSlide,
                             title: '',
                             desc:

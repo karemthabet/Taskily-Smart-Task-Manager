@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:todo_app/UI/Models/task_model.dart';
 import 'package:todo_app/remot/firebase_services.dart';
@@ -5,32 +7,33 @@ import 'package:todo_app/remot/firebase_services.dart';
 class TasksProvider with ChangeNotifier {
   List<TaskModel> taskModels = [];
   DateTime selectedDate = DateTime.now();
-  Future<void> getTasksByDate() async {
-    try {
-      List<TaskModel> allTasks = await FirebaseServices.getTasksByData(
-          DateTime(selectedDate.year, selectedDate.month, selectedDate.day));
-      taskModels = allTasks;
-      notifyListeners();
-    } catch (e) {}
-  }
 
-  Future<void> addTask(TaskModel newTask) async {
-    try {
-      await FirebaseServices.addTask(newTask).timeout(const Duration(milliseconds:500 ));
-      changeSelectedDate(selectedDate);
-      getTasksByDate();
-      notifyListeners();
-    } catch (e) {
-      print(e);
-    }
+Stream<List<TaskModel>> getTasksByDate() async* {
+  try {
+    yield* FirebaseServices.getTasksByData(
+        DateTime(selectedDate.year, selectedDate.month, selectedDate.day));
+  } catch (e) {
+    log("Error fetching tasks: $e");
   }
+}
 
-  changeSelectedDate(DateTime newDate) async {
+Future<void> addTask(TaskModel newTask) async {
+  try {
+    await FirebaseServices.addTask(newTask).timeout(const Duration(milliseconds: 500));
+    taskModels.add(newTask);
+    notifyListeners();
+  } catch (e) {
+    log("Error adding task: $e");
+  }
+}
+
+  Future<void> changeSelectedDate(DateTime newDate) async {
     try {
       selectedDate = newDate;
-      await getTasksByDate();
+       getTasksByDate();
+      notifyListeners();
     } catch (e) {
-      print(e);
+      log("Error changing date: $e");
     }
   }
 }

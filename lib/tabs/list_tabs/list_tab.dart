@@ -14,23 +14,12 @@ class ListTab extends StatefulWidget {
 }
 
 class _ListTabState extends State<ListTab> {
-  EasyInfiniteDateTimelineController? controller =
-      EasyInfiniteDateTimelineController();
-late Stream<List<TaskModel>> _tasksFuture;
-
-@override
-void initState() {
-  super.initState();
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    setState(() {
-      _tasksFuture = context.read<TasksProvider>().getTasksByDate();
-    });
-  });
-}
+  late final EasyInfiniteDateTimelineController controller = EasyInfiniteDateTimelineController();
 
   @override
   Widget build(BuildContext context) {
     TasksProvider tasksProvider = context.watch<TasksProvider>();
+
     return Column(
       children: [
         Padding(
@@ -40,9 +29,6 @@ void initState() {
             showTimelineHeader: false,
             onDateChange: (newDate) {
               tasksProvider.changeSelectedDate(newDate);
-              setState(() {
-                _tasksFuture = tasksProvider.getTasksByDate();
-              });
             },
             controller: controller,
             firstDate: DateTime(2025),
@@ -70,8 +56,7 @@ void initState() {
               ),
               activeDayStyle: DayStyle(
                 dayStrStyle: const TextStyle(fontSize: 15, color: Colors.black),
-                monthStrStyle:
-                    const TextStyle(fontSize: 15, color: Colors.black),
+                monthStrStyle: const TextStyle(fontSize: 15, color: Colors.black),
                 dayNumStyle: const TextStyle(
                     fontSize: 18,
                     color: Colors.black,
@@ -101,37 +86,35 @@ void initState() {
             ),
           ),
         ),
-       StreamBuilder<List<TaskModel>>(
-  stream: _tasksFuture,
-  builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return const Expanded(
-        child: Center(
-          child: CircularProgressIndicator(),
+        
+        Expanded(
+          child: StreamBuilder<List<TaskModel>>(
+            stream: tasksProvider.getTasksByDate(), // استدعاء الـ stream مباشرة
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasError) {
+                return Center(child: Text("Error: ${snapshot.error}"));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text(
+                    "No Tasks Today",
+                    style: TextStyle(color: AppColors.primaryColor),
+                  ),
+                );
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    return CardItem(task: snapshot.data![index]);
+                  },
+                );
+              }
+            },
+          ),
         ),
-      );
-    } else if (snapshot.hasError) {
-      return Expanded(
-          child: Center(child: Text("Error: ${snapshot.error}")));
-    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-      return const Expanded(
-        child: Center(
-          child:  Text(
-              "No Tasks Today",style: TextStyle(color: AppColors.primaryColor),),
-        ),
-      );
-    } else {
-      return Expanded(
-        child: ListView.builder(
-          itemCount: snapshot.data!.length,
-          itemBuilder: (context, index) {
-            return CardItem(task: snapshot.data![index]);
-          },
-        ),
-      );
-    }
-  },
-)
       ],
     );
   }

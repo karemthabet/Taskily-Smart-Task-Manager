@@ -9,28 +9,8 @@ import 'package:todo_app/provider/theme_provider.dart';
 import 'package:todo_app/remot/firebase_services.dart';
 import 'package:todo_app/views/sign%20in_screen/sign_in.dart';
 
-class SettingsTab extends StatefulWidget {
+class SettingsTab extends StatelessWidget {
   const SettingsTab({super.key});
-
-  @override
-  State<SettingsTab> createState() => _SettingsTabState();
-}
-
-class _SettingsTabState extends State<SettingsTab> {
-  late String selectedValue;
-  late String selectedAppThemeMode;
-  late ThemeProvider themeProvider;
-  late LanguageProvider languageProvider;
-
-  @override
-  void initState() {
-    super.initState();
-    themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    languageProvider = Provider.of<LanguageProvider>(context, listen: false);
-
-    selectedValue = languageProvider.selectedLanguage;
-    selectedAppThemeMode = themeProvider.appThemeMode.toString();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,116 +33,91 @@ class _SettingsTabState extends State<SettingsTab> {
             AppLocalizations.of(context)!.language,
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 24),
-            padding: const EdgeInsets.only(left: 15),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary,
-              border: Border.all(color: AppColors.primaryColor),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                dropdownColor: Theme.of(context).colorScheme.onPrimary,
-                value: selectedValue,
-                isExpanded: true,
+          Consumer<LanguageProvider>(
+            builder: (context, languageProvider, child) {
+              return _buildDropdown(
+                context: context,
+                value: languageProvider.selectedLanguage,
                 items: const [
-                  DropdownMenuItem<String>(
-                    value: 'en',
-                    child: Text(
-                      'English',
-                      style: TextStyle(
-                          color: AppColors.primaryColor, fontSize: 16),
-                    ),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: 'ar',
-                    child: Text(
-                      'العربية',
-                      style: TextStyle(
-                          color: AppColors.primaryColor, fontSize: 16),
-                    ),
-                  ),
+                  DropdownMenuItem(value: 'en', child: Text('English')),
+                  DropdownMenuItem(value: 'ar', child: Text('العربية')),
                 ],
-                onChanged: (valueKey) {
-                  setState(() {
-                    selectedValue = valueKey!;
-                  });
-                  selectedValue == "en"
-                      ? languageProvider.changeSelectedLanguage("en")
-                      : languageProvider.changeSelectedLanguage("ar");
-                  setState(() {});
+                onChanged: (value) {
+                  if (value != null) {
+                    languageProvider.setSelectedLanguage(value);
+                  }
                 },
-              ),
-            ),
+              );
+            },
           ),
           const SizedBox(height: 70),
 
-          // Mode Dropdown
+          // Theme Mode Dropdown
           Text(
             AppLocalizations.of(context)!.mode,
             style: Theme.of(context).textTheme.titleSmall,
           ),
-
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 24),
-            padding: const EdgeInsets.only(left: 15),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary,
-              border: Border.all(color: AppColors.primaryColor),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                dropdownColor: Theme.of(context).colorScheme.onPrimary,
-                value: selectedAppThemeMode,
-                isExpanded: true,
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return _buildDropdown(
+                context: context,
+                value: themeProvider.appTheme.toString(),
                 items: const [
-                  DropdownMenuItem<String>(
-                    value: "ThemeMode.light",
-                    child: Text(
-                      'Light Mode',
-                      style: TextStyle(
-                          color: AppColors.primaryColor, fontSize: 16),
-                    ),
-                  ),
-                  DropdownMenuItem<String>(
-                    value: "ThemeMode.dark",
-                    child: Text(
-                      'Dark Mode',
-                      style: TextStyle(
-                          color: AppColors.primaryColor, fontSize: 16),
-                    ),
-                  ),
+                  DropdownMenuItem(value: "ThemeMode.light", child: Text('Light Mode')),
+                  DropdownMenuItem(value: "ThemeMode.dark", child: Text('Dark Mode')),
                 ],
-                onChanged: (valueKey) {
-                  setState(() {
-                    selectedAppThemeMode = valueKey!;
-                  });
-
-                  selectedAppThemeMode == "ThemeMode.light"
-                      ? themeProvider.changeAppThemeMode(ThemeMode.light)
-                      : themeProvider.changeAppThemeMode(ThemeMode.dark);
+                onChanged: (value) {
+                  if (value == "ThemeMode.light") {
+                    themeProvider.setAppTheme(ThemeMode.light);
+                  } else {
+                    themeProvider.setAppTheme(ThemeMode.dark);
+                  }
                 },
-              ),
-            ),
+              );
+            },
           ),
-          const SizedBox(
-            height: 50,
-          ),
+          const SizedBox(height: 50),
 
-           ListTile(
-            onTap: () {FirebaseServices.logout();
-            Provider.of<TasksProvider>(context,listen: false).taskModels.clear();
-            Navigator.of(context).popAndPushNamed(SignIn.routeName);
-            
-            
+          // Logout Button
+          ListTile(
+            onTap: () {
+              FirebaseServices.logout();
+              Provider.of<TasksProvider>(context, listen: false).taskModels.clear();
+              Navigator.of(context).popAndPushNamed(SignIn.routeName);
             },
             title: const Text(
               "Logout",
-              style: TextStyle(color: AppColors.primaryColor, fontSize: 24,fontWeight: FontWeight.bold),
+              style: TextStyle(color: AppColors.primaryColor, fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            trailing: const Icon(Icons.logout_outlined,size: 30,color: AppColors.primaryColor,),
+            trailing: const Icon(Icons.logout_outlined, size: 30, color: AppColors.primaryColor),
           ),
         ],
+      ),
+    );
+  }
+
+  // Helper method for creating dropdown widgets
+  Widget _buildDropdown({
+    required BuildContext context,
+    required String value,
+    required List<DropdownMenuItem<String>> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 24),
+      padding: const EdgeInsets.only(left: 15),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onPrimary,
+        border: Border.all(color: AppColors.primaryColor),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          dropdownColor: Theme.of(context).colorScheme.onPrimary,
+          value: value,
+          isExpanded: true,
+          items: items,
+          onChanged: onChanged,
+        ),
       ),
     );
   }

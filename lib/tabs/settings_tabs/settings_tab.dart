@@ -33,18 +33,19 @@ class SettingsTab extends StatelessWidget {
             AppLocalizations.of(context)!.language,
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          Consumer<LanguageProvider>(
-            builder: (context, languageProvider, child) {
+          Selector<LanguageProvider, String>(
+            selector: (context, languageProvider) => languageProvider.selectedLanguage,
+            builder: (context, selectedLanguage, child) {
               return _buildDropdown(
                 context: context,
-                value: languageProvider.selectedLanguage,
+                value: selectedLanguage,
                 items: const [
                   DropdownMenuItem(value: 'en', child: Text('English')),
                   DropdownMenuItem(value: 'ar', child: Text('العربية')),
                 ],
                 onChanged: (value) {
                   if (value != null) {
-                    languageProvider.setSelectedLanguage(value);
+                    Provider.of<LanguageProvider>(context,listen: false).setSelectedLanguage(value);
                   }
                 },
               );
@@ -57,20 +58,21 @@ class SettingsTab extends StatelessWidget {
             AppLocalizations.of(context)!.mode,
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          Consumer<ThemeProvider>(
-            builder: (context, themeProvider, child) {
+          Selector<ThemeProvider, ThemeMode>(
+            selector: (context, themeProvider) => themeProvider.myAppTheme,
+            builder: (context, myAppTheme, child) {
               return _buildDropdown(
                 context: context,
-                value: themeProvider.appTheme.toString(),
+                value: myAppTheme == ThemeMode.dark ? "Dark Mode" : "Light Mode",
                 items: const [
-                  DropdownMenuItem(value: "ThemeMode.light", child: Text('Light Mode')),
-                  DropdownMenuItem(value: "ThemeMode.dark", child: Text('Dark Mode')),
+                  DropdownMenuItem(value: "Light Mode", child: Text('Light Mode')),
+                  DropdownMenuItem(value: "Dark Mode", child: Text('Dark Mode')),
                 ],
                 onChanged: (value) {
-                  if (value == "ThemeMode.light") {
-                    themeProvider.setAppTheme(ThemeMode.light);
-                  } else {
-                    themeProvider.setAppTheme(ThemeMode.dark);
+                  if (value == "Light Mode") {
+                    Provider.of<ThemeProvider>(context,listen: false).setAppTheme(ThemeMode.light);
+                  } else if (value == "Dark Mode") {
+                    Provider.of<ThemeProvider>(context,listen: false).setAppTheme(ThemeMode.dark);
                   }
                 },
               );
@@ -82,7 +84,7 @@ class SettingsTab extends StatelessWidget {
           ListTile(
             onTap: () {
               FirebaseServices.logout();
-              Provider.of<TasksProvider>(context, listen: false).taskModels.clear();
+              Provider.of<TasksProvider>(context,listen: false).taskModels.clear();
               Navigator.of(context).popAndPushNamed(SignIn.routeName);
             },
             title: const Text(

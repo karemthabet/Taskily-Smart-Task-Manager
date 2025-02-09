@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -19,22 +19,16 @@ import 'package:todo_app/views/signup_screen/sign_up.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  await CashData.cacheInitialization(); // ✅ انتظار التهيئة قبل الاستخدام
+  await CashData.cacheInitialization(); 
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
-  FirebaseFirestore.instance.disableNetwork();
-  FirebaseFirestore.instance.settings =
-      const Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
-
   String savedLanguage = CashData.getData(key: "lang") ?? "en";
   String savedTheme = CashData.getData(key: "theme") ?? "light";
 
   ThemeMode savedAppTheme =
       savedTheme == "dark" ? ThemeMode.dark : ThemeMode.light;
-
   runApp(
     MultiProvider(
       providers: [

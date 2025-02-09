@@ -126,7 +126,7 @@ class CardItem extends StatelessWidget {
                         ))
                 : GestureDetector(
                     onTap: () {
-                      FirebaseServices.updateTask(task.id, {
+                      FirebaseServices.updateTask(id:   task.id,data:  {
                         "isDone": true,
                       });
                       tasksProvider.getTasksByDate();

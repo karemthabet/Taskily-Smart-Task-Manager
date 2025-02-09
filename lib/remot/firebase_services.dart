@@ -2,6 +2,8 @@
 
 // ignore_for_file: unused_local_variable
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ import 'package:todo_app/UI/utils/constants%20_managers.dart';
 import 'package:todo_app/UI/utils/diaglogs.dart';
 import 'package:todo_app/provider/tasks_provider.dart';
 import 'package:todo_app/views/sign%20in_screen/sign_in.dart';
+  DateTime selectedDatee = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
 abstract class FirebaseServices {
   static CollectionReference<TaskModel> getTasksCollection() => getUserCollection()
@@ -43,16 +46,15 @@ abstract class FirebaseServices {
     }
   }
 
-static Stream<List<TaskModel>> getTasksByData(DateTime selectedDate) async* {
+ static Stream<List<TaskModel>> getTasksByData({required  DateTime? selectedDate}) async* {
+  DateTime onlyDate = selectedDate ??selectedDatee ;
   CollectionReference<TaskModel> tasksCollection = getTasksCollection();
+
   Stream<QuerySnapshot<TaskModel>> tasksQuery = tasksCollection
-      .where("date", isEqualTo: Timestamp.fromDate(selectedDate))
+      .where("date", isEqualTo: Timestamp.fromDate(onlyDate))
       .snapshots();
-  yield* tasksQuery.map((event) => event.docs
-      .map(
-        (e) => e.data(),
-      )
-      .toList());
+
+  yield* tasksQuery.map((event) => event.docs.map((e) => e.data()).toList());
 }
 
   static Future<void> deleteTask(String id) async {
@@ -64,14 +66,15 @@ static Stream<List<TaskModel>> getTasksByData(DateTime selectedDate) async* {
     }
   }
 
- static Future<void> updateTask(String id, Map<String, dynamic> data) async {
-  try {
-    final tasksCollection = getTasksCollection();
-    await tasksCollection.doc(id).update(data);
-  } catch (e) {
-    throw Exception("Error updating task: $e");
+  static Future<void> updateTask(
+      {required String id, required Map<String, dynamic> data}) async {
+    try {
+      final tasksCollection = getTasksCollection();
+      await tasksCollection.doc(id).update(data);
+    } catch (e) {
+      throw Exception("Error updating task: $e");
+    }
   }
-}
 
   static Future<List<TaskModel>> getTasks() async {
     try {
@@ -121,6 +124,7 @@ static Stream<List<TaskModel>> getTasksByData(DateTime selectedDate) async* {
       Diaglogs.hide(context);
       Diaglogs.showMessage(context,
           title: "Error Occurred", body: e.toString());
+      log("#####################");
     }
   }
 

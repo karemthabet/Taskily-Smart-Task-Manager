@@ -45,12 +45,11 @@ class _SignInState extends State<SignIn> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 30),
                 const Image(
                   image: AssetImage("assets/images/logo.png"),
                   height: 120,
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
                 Text(
                   "Welcome Back!",
                   style: TextStyle(
@@ -184,7 +183,7 @@ class _SignInState extends State<SignIn> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 5),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
@@ -232,7 +231,58 @@ class _SignInState extends State<SignIn> {
                     style: TextStyle(color: AppColors.primaryColor),
                   ),
                 ),
-               
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      width: 150, 
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+
+
+
+
+                        },
+                        icon: Icon(Icons.g_mobiledata, color: Colors.white), 
+                        label: Text("Google"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red, 
+                          foregroundColor: Colors.white,  
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12), 
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 10), 
+                          minimumSize: Size(100, 40), 
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    SizedBox(
+                      width: 150, 
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+
+
+
+
+                          
+                        },
+                        icon: Icon(Icons.facebook, color: Colors.white),
+                        label: Text("Facebook"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue, 
+                          foregroundColor: Colors.white, 
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12), 
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 10), 
+                          minimumSize: Size(100, 40),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+
               ],
             ),
           ),

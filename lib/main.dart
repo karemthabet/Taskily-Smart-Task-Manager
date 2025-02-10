@@ -1,7 +1,9 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:todo_app/UI/Screens/home.dart';
 import 'package:todo_app/UI/Screens/splash.dart';
 import 'package:todo_app/UI/utils/app_theme.dart';
@@ -18,12 +20,19 @@ import 'package:todo_app/views/signup_screen/sign_up.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  await CashData.cacheInitialization(); 
+
+  await CashData.cacheInitialization();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  var isCon = await InternetConnectionChecker.instance.hasConnection;
+  if (!isCon) {
+    FirebaseFirestore.instance.disableNetwork();
+    FirebaseFirestore.instance.settings =
+        Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
+  }
+
   String savedLanguage = CashData.getData(key: "lang") ?? "en";
   String savedTheme = CashData.getData(key: "theme") ?? "light";
 

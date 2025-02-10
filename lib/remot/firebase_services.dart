@@ -7,6 +7,8 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Models/task_model.dart';
 import 'package:todo_app/UI/Models/user_data_model.dart';
@@ -15,7 +17,9 @@ import 'package:todo_app/UI/utils/constants%20_managers.dart';
 import 'package:todo_app/UI/utils/diaglogs.dart';
 import 'package:todo_app/provider/tasks_provider.dart';
 import 'package:todo_app/views/sign%20in_screen/sign_in.dart';
-  DateTime selectedDatee = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+DateTime selectedDatee =
+    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
 abstract class FirebaseServices {
   static CollectionReference<TaskModel> getTasksCollection() => getUserCollection()
@@ -46,16 +50,17 @@ abstract class FirebaseServices {
     }
   }
 
- static Stream<List<TaskModel>> getTasksByData({required  DateTime? selectedDate}) async* {
-  DateTime onlyDate = selectedDate ??selectedDatee ;
-  CollectionReference<TaskModel> tasksCollection = getTasksCollection();
+  static Stream<List<TaskModel>> getTasksByData(
+      {required DateTime? selectedDate}) async* {
+    DateTime onlyDate = selectedDate ?? selectedDatee;
+    CollectionReference<TaskModel> tasksCollection = getTasksCollection();
 
-  Stream<QuerySnapshot<TaskModel>> tasksQuery = tasksCollection
-      .where("date", isEqualTo: Timestamp.fromDate(onlyDate))
-      .snapshots();
+    Stream<QuerySnapshot<TaskModel>> tasksQuery = tasksCollection
+        .where("date", isEqualTo: Timestamp.fromDate(onlyDate))
+        .snapshots();
 
-  yield* tasksQuery.map((event) => event.docs.map((e) => e.data()).toList());
-}
+    yield* tasksQuery.map((event) => event.docs.map((e) => e.data()).toList());
+  }
 
   static Future<void> deleteTask(String id) async {
     try {
@@ -215,5 +220,33 @@ abstract class FirebaseServices {
 
   static Future logout() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  static Future signInWithGoogle(BuildContext content) async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) return;
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    await FirebaseAuth.instance.signInWithCredential(credential);
+    Navigator.popAndPushNamed(content, Home.routeName);
+  }
+
+  static Future signInWithFacebook(BuildContext content) async {
+    final LoginResult loginResult = await FacebookAuth.instance.login();
+    if (loginResult.status != LoginStatus.success ||
+        loginResult.accessToken == null) return;
+
+    final OAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
+
+    await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+    Navigator.popAndPushNamed(content, Home.routeName);
   }
 }

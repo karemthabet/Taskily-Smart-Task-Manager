@@ -5,10 +5,12 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Widgets/textfield_auth.dart';
 import 'package:todo_app/UI/utils/app_colors.dart';
 import 'package:todo_app/provider/auth_provider.dart';
+import 'package:todo_app/remot/firebase_services.dart';
 import 'package:todo_app/views/signup_screen/sign_up.dart';
 
 class SignIn extends StatefulWidget {
@@ -235,54 +237,48 @@ class _SignInState extends State<SignIn> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     SizedBox(
-                      width: 150, 
+                      width: 150,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-
-
-
-
+                        onPressed: () async {
+                          GoogleSignIn googleSignIn = GoogleSignIn();
+                          googleSignIn.disconnect();
+                          await FirebaseServices.signInWithGoogle(context);
                         },
-                        icon: Icon(Icons.g_mobiledata, color: Colors.white), 
+                        icon: Icon(Icons.g_mobiledata, color: Colors.white),
                         label: Text("Google"),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red, 
-                          foregroundColor: Colors.white,  
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12), 
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 10), 
-                          minimumSize: Size(100, 40), 
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          minimumSize: Size(100, 40),
                         ),
                       ),
                     ),
                     SizedBox(width: 10),
                     SizedBox(
-                      width: 150, 
+                      width: 150,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-
-
-
-
-                          
+                        onPressed: () async {
+                         await  FirebaseServices.signInWithFacebook(context);
                         },
                         icon: Icon(Icons.facebook, color: Colors.white),
                         label: Text("Facebook"),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, 
-                          foregroundColor: Colors.white, 
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12), 
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 10), 
+                          padding: EdgeInsets.symmetric(vertical: 10),
                           minimumSize: Size(100, 40),
                         ),
                       ),
                     ),
                   ],
                 )
-
               ],
             ),
           ),

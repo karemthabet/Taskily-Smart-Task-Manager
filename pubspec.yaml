@@ -40,8 +40,7 @@ dependencies:
   firebase_database: ^11.3.2 
   cloud_firestore: 
   provider:
-  flutter_localizations:
-    sdk: flutter
+  flutter_localization: ^0.3.1
   intl: ^0.19.0
   google_fonts: 
   font_awesome_flutter: ^10.8.0
@@ -50,6 +49,9 @@ dependencies:
   awesome_dialog: ^3.2.1
   google_sign_in: ^6.2.2
   shared_preferences: ^2.5.1
+  internet_connection_checker: ^3.0.1
+  flutter_facebook_auth: ^7.1.1
+
 
 icons_launcher:
   image_path: "assets/images/logosss.png"

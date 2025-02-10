@@ -5,7 +5,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Widgets/textfield_auth.dart';
 import 'package:todo_app/UI/utils/app_colors.dart';
@@ -120,10 +119,9 @@ class _SignInState extends State<SignIn> {
                           dialogType: DialogType.error,
                           animType: AnimType.rightSlide,
                           title: 'Error',
-                          desc:
-                              'Email cannot be Empty', // النص الذي سيظهر في الـ Dialog
+                          desc: 'Email cannot be Empty',
                           btnOkText: "OK", // نص زر OK
-                          btnOkColor: Colors.red, // اللون الأحمر للزر
+                          btnOkColor: Colors.red,
                           btnOkOnPress: () {
                             Navigator.of(context)
                                 .popAndPushNamed(SignIn.routeName);
@@ -141,11 +139,9 @@ class _SignInState extends State<SignIn> {
                             dialogType: DialogType.info,
                             animType: AnimType.rightSlide,
                             title: '',
-                            desc:
-                                'check your email and add new password', // النص الذي سيظهر في الـ Dialog
+                            desc: 'check your email and add new password',
                             btnOkText: "OK", // نص زر OK
-                            btnOkColor:
-                                AppColors.primaryColor, // اللون الأحمر للزر
+                            btnOkColor: AppColors.primaryColor,
                             btnOkOnPress: () {
                               Navigator.of(context)
                                   .popAndPushNamed(SignIn.routeName);
@@ -160,10 +156,9 @@ class _SignInState extends State<SignIn> {
                             dialogType: DialogType.error,
                             animType: AnimType.rightSlide,
                             title: 'Error',
-                            desc:
-                                'Email cannot be Empty', // النص الذي سيظهر في الـ Dialog
-                            btnOkText: "OK", // نص زر OK
-                            btnOkColor: Colors.red, // اللون الأحمر للزر
+                            desc: 'Email cannot be Empty',
+                            btnOkText: "OK",
+                            btnOkColor: Colors.red,
                             btnOkOnPress: () {
                               Navigator.of(context)
                                   .popAndPushNamed(SignIn.routeName);
@@ -220,18 +215,15 @@ class _SignInState extends State<SignIn> {
                   children: [
                     Expanded(
                       child: Container(
-
-                        padding: EdgeInsets.symmetric(horizontal: 45,vertical: 20),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 45, vertical: 20),
                         child: ElevatedButton.icon(
                           onPressed: () async {
-                            GoogleSignIn googleSignIn = GoogleSignIn();
-                            googleSignIn.disconnect();
                             await FirebaseServices.signInWithGoogle(context);
                           },
                           icon: Icon(Icons.g_mobiledata, color: Colors.white),
                           label: Text(" Sign in with Google"),
                           style: ElevatedButton.styleFrom(
-                            
                             backgroundColor: Colors.red,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(

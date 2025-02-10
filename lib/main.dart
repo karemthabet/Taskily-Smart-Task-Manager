@@ -80,7 +80,6 @@ class _TodoAppState extends State<TodoApp> {
         SignIn.routeName: (context) => const SignIn(),
         SignUp.routeName: (context) => const SignUp(),
       },
-      // ignore: unnecessary_null_comparison
       initialRoute: FirebaseAuth.instance.currentUser?.uid == null
           ? Splash.routeName
           : Home.routeName,

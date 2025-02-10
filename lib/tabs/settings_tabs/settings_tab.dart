@@ -34,7 +34,8 @@ class SettingsTab extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           Selector<LanguageProvider, String>(
-            selector: (context, languageProvider) => languageProvider.selectedLanguage,
+            selector: (context, languageProvider) =>
+                languageProvider.selectedLanguage,
             builder: (context, selectedLanguage, child) {
               return _buildDropdown(
                 context: context,
@@ -45,7 +46,8 @@ class SettingsTab extends StatelessWidget {
                 ],
                 onChanged: (value) {
                   if (value != null) {
-                    Provider.of<LanguageProvider>(context,listen: false).setSelectedLanguage(value);
+                    Provider.of<LanguageProvider>(context, listen: false)
+                        .setSelectedLanguage(value);
                   }
                 },
               );
@@ -63,16 +65,21 @@ class SettingsTab extends StatelessWidget {
             builder: (context, myAppTheme, child) {
               return _buildDropdown(
                 context: context,
-                value: myAppTheme == ThemeMode.dark ? "Dark Mode" : "Light Mode",
+                value:
+                    myAppTheme == ThemeMode.dark ? "Dark Mode" : "Light Mode",
                 items: const [
-                  DropdownMenuItem(value: "Light Mode", child: Text('Light Mode')),
-                  DropdownMenuItem(value: "Dark Mode", child: Text('Dark Mode')),
+                  DropdownMenuItem(
+                      value: "Light Mode", child: Text('Light Mode')),
+                  DropdownMenuItem(
+                      value: "Dark Mode", child: Text('Dark Mode')),
                 ],
                 onChanged: (value) {
                   if (value == "Light Mode") {
-                    Provider.of<ThemeProvider>(context,listen: false).setAppTheme(ThemeMode.light);
+                    Provider.of<ThemeProvider>(context, listen: false)
+                        .setAppTheme(ThemeMode.light);
                   } else if (value == "Dark Mode") {
-                    Provider.of<ThemeProvider>(context,listen: false).setAppTheme(ThemeMode.dark);
+                    Provider.of<ThemeProvider>(context, listen: false)
+                        .setAppTheme(ThemeMode.dark);
                   }
                 },
               );
@@ -84,14 +91,20 @@ class SettingsTab extends StatelessWidget {
           ListTile(
             onTap: () {
               FirebaseServices.logout();
-              Provider.of<TasksProvider>(context,listen: false).taskModels.clear();
+              Provider.of<TasksProvider>(context, listen: false)
+                  .taskModels
+                  .clear();
               Navigator.of(context).popAndPushNamed(SignIn.routeName);
             },
             title: const Text(
               "Logout",
-              style: TextStyle(color: AppColors.primaryColor, fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
             ),
-            trailing: const Icon(Icons.logout_outlined, size: 30, color: AppColors.primaryColor),
+            trailing: const Icon(Icons.logout_outlined,
+                size: 30, color: AppColors.primaryColor),
           ),
         ],
       ),

@@ -7,7 +7,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Models/task_model.dart';
@@ -20,8 +19,10 @@ import 'package:todo_app/views/sign%20in_screen/sign_in.dart';
 
 DateTime selectedDatee =
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    
 
 abstract class FirebaseServices {
+  static final GoogleSignIn _googleSignIn = GoogleSignIn();
   static CollectionReference<TaskModel> getTasksCollection() => getUserCollection()
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection("Tasks")
@@ -220,22 +221,29 @@ abstract class FirebaseServices {
 
   static Future logout() async {
     await FirebaseAuth.instance.signOut();
+    _googleSignIn.disconnect();
   }
+static Future<void> signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return;
 
-  static Future signInWithGoogle(BuildContext content) async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) return;
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-    await FirebaseAuth.instance.signInWithCredential(credential);
-    Navigator.popAndPushNamed(content, Home.routeName);
+      await FirebaseAuth.instance.signInWithCredential(credential);
+            if (FirebaseAuth.instance.currentUser != null) {
+        Navigator.popAndPushNamed(context, Home.routeName);
+      }
+    } catch (e) {
+      print("Error signing in with Google: $e");
+    }
   }
-
 }
+
+

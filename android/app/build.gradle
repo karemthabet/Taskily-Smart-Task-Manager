@@ -18,9 +18,9 @@ android {
         versionName flutter.versionName
 
         // دعم معالجات 32-bit و 64-bit
-        ndk {
-            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-        }
+        // ndk {
+        //     abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        // }
     }
 
     compileOptions {

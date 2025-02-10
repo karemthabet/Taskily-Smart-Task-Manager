@@ -50,7 +50,6 @@ dependencies:
   google_sign_in: ^6.2.2
   shared_preferences: ^2.5.1
   internet_connection_checker: ^3.0.1
-  flutter_facebook_auth: ^7.1.1
 
 
 icons_launcher:

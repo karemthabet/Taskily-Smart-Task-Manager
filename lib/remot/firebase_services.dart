@@ -238,15 +238,4 @@ abstract class FirebaseServices {
     Navigator.popAndPushNamed(content, Home.routeName);
   }
 
-  static Future signInWithFacebook(BuildContext content) async {
-    final LoginResult loginResult = await FacebookAuth.instance.login();
-    if (loginResult.status != LoginStatus.success ||
-        loginResult.accessToken == null) return;
-
-    final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
-
-    await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-    Navigator.popAndPushNamed(content, Home.routeName);
-  }
 }

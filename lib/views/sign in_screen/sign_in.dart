@@ -215,7 +215,36 @@ class _SignInState extends State<SignIn> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: Container(
+
+                        padding: EdgeInsets.symmetric(horizontal: 45,vertical: 20),
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            GoogleSignIn googleSignIn = GoogleSignIn();
+                            googleSignIn.disconnect();
+                            await FirebaseServices.signInWithGoogle(context);
+                          },
+                          icon: Icon(Icons.g_mobiledata, color: Colors.white),
+                          label: Text(" Sign in with Google"),
+                          style: ElevatedButton.styleFrom(
+                            
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            minimumSize: Size(100, 40),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 Text(
                   "Don’t have an account?",
                   style: TextStyle(
@@ -233,52 +262,6 @@ class _SignInState extends State<SignIn> {
                     style: TextStyle(color: AppColors.primaryColor),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SizedBox(
-                      width: 150,
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          GoogleSignIn googleSignIn = GoogleSignIn();
-                          googleSignIn.disconnect();
-                          await FirebaseServices.signInWithGoogle(context);
-                        },
-                        icon: Icon(Icons.g_mobiledata, color: Colors.white),
-                        label: Text("Google"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          minimumSize: Size(100, 40),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    SizedBox(
-                      width: 150,
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                         await  FirebaseServices.signInWithFacebook(context);
-                        },
-                        icon: Icon(Icons.facebook, color: Colors.white),
-                        label: Text("Facebook"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          minimumSize: Size(100, 40),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
           ),

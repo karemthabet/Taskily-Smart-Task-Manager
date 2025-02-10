@@ -6,41 +6,60 @@ plugins {
 }
 
 android {
-    namespace = "com.example.todo_app"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    namespace "com.example.todo_app"
+    compileSdk flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    defaultConfig {
+        applicationId "com.example.todo_app"
+        minSdk 23
+        targetSdk 33
+        versionCode flutter.versionCode
+        versionName flutter.versionName
+
+        // دعم معالجات 32-bit و 64-bit
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+    }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
-    }
-
-    defaultConfig {
-        applicationId = "com.example.todo_app"
-        minSdk = 23
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-
-        // إضافة هذه السطور لدعم أجهزة 32-bit و 64-bit
-        ndk {
-            abiFilters "arm64-v8a", "x86_64" // يدعم 32-bit و 64-
-        }
+        jvmTarget = "1.8"
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            signingConfig signingConfigs.debug
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 flutter {
-    source = "../.."
+    source "../.."
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.10"
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+
+    // دعم تشغيل كود Flutter داخل Android
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+
+    // حل مشكلة Multidex في حالة تجاوز عدد الـ methods limit
+    implementation 'androidx.multidex:multidex:2.0.1'
 }

@@ -2,8 +2,6 @@
 
 // ignore_for_file: unused_local_variable, non_constant_identifier_names
 
-import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Widgets/textfield_auth.dart';
@@ -11,6 +9,9 @@ import 'package:todo_app/UI/utils/app_colors.dart';
 import 'package:todo_app/provider/auth_provider.dart';
 import 'package:todo_app/remot/firebase_services.dart';
 import 'package:todo_app/views/signup_screen/sign_up.dart';
+
+final emailRegExp = RegExp(
+    (r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"));
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -77,8 +78,7 @@ class _SignInState extends State<SignIn> {
                     if (data == null || data.isEmpty) {
                       return 'Please enter an email address';
                     }
-                    final emailRegExp = RegExp(
-                        (r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"));
+
                     if (!emailRegExp.hasMatch(data)) {
                       return 'Please enter a valid email address';
                     }
@@ -112,63 +112,8 @@ class _SignInState extends State<SignIn> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {
-                      if (emailController.text == "") {
-                        AwesomeDialog(
-                          context: context,
-                          dialogType: DialogType.error,
-                          animType: AnimType.rightSlide,
-                          title: 'Error',
-                          desc: 'Email cannot be Empty',
-                          btnOkText: "OK", // نص زر OK
-                          btnOkColor: Colors.red,
-                          btnOkOnPress: () {
-                            Navigator.of(context)
-                                .popAndPushNamed(SignIn.routeName);
-                          },
-                          titleTextStyle: const TextStyle(
-                              color: Colors.red, fontWeight: FontWeight.bold),
-                          descTextStyle: const TextStyle(color: Colors.red),
-                        ).show();
-                      } else {
-                        try {
-                          FirebaseAuth.instance.sendPasswordResetEmail(
-                              email: emailController.text);
-                          AwesomeDialog(
-                            context: context,
-                            dialogType: DialogType.info,
-                            animType: AnimType.rightSlide,
-                            title: '',
-                            desc: 'check your email and add new password',
-                            btnOkText: "OK", // نص زر OK
-                            btnOkColor: AppColors.primaryColor,
-                            btnOkOnPress: () {
-                              Navigator.of(context)
-                                  .popAndPushNamed(SignIn.routeName);
-                            },
-                            titleTextStyle: const TextStyle(
-                                color: Colors.red, fontWeight: FontWeight.bold),
-                            descTextStyle: const TextStyle(color: Colors.red),
-                          ).show();
-                        } catch (e) {
-                          AwesomeDialog(
-                            context: context,
-                            dialogType: DialogType.error,
-                            animType: AnimType.rightSlide,
-                            title: 'Error',
-                            desc: 'Email cannot be Empty',
-                            btnOkText: "OK",
-                            btnOkColor: Colors.red,
-                            btnOkOnPress: () {
-                              Navigator.of(context)
-                                  .popAndPushNamed(SignIn.routeName);
-                            },
-                            titleTextStyle: const TextStyle(
-                                color: Colors.red, fontWeight: FontWeight.bold),
-                            descTextStyle: const TextStyle(color: Colors.red),
-                          ).show();
-                        }
-                      }
+                    onPressed: () async {
+                      await FirebaseServices.forgotPassword(context: context,emailController: emailController);
                     },
                     child: Text(
                       "Forgot Password?",

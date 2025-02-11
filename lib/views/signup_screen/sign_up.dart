@@ -132,20 +132,16 @@ class _SignUpState extends State<SignUp> {
                   ),
                   onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      
-                        await Provider.of<LocalAuthProvider>(context,
-                                listen: false)
-                            .register(
-                                emailController.text,
-                                passwordController.text,
-                                context,
-                                nameController.text);
+                      await Provider.of<LocalAuthProvider>(context,
+                              listen: false)
+                          .register(
+                              emailController.text,
+                              passwordController.text,
+                              context,
+                              nameController.text);
 
-                        await FirebaseAuth.instance.currentUser!
-                            .sendEmailVerification();
-
-                     
-                       
+                      await FirebaseAuth.instance.currentUser!
+                          .sendEmailVerification();
                     }
                   },
                   child: const Center(

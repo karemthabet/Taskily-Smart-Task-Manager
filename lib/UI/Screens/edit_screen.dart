@@ -21,7 +21,8 @@ class _EditScreenState extends State<EditScreen> {
   late TextEditingController textEditingController1;
   late TextEditingController textEditingController2;
   GlobalKey<FormState> key = GlobalKey();
-  DateTime selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  DateTime selectedDate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
   @override
   void initState() {
@@ -169,12 +170,12 @@ class _EditScreenState extends State<EditScreen> {
                         id: widget.task.id,
                         taskName: textEditingController1.text,
                         taskDetails: textEditingController2.text,
-                        date: selectedDate, 
+                        date: selectedDate,
                       );
+                      Navigator.of(context).popAndPushNamed(Home.routeName);
 
                       await Provider.of<TasksProvider>(context, listen: false)
-                          .editTask(id: widget.task.id,  task: updatedTask);
-                      Navigator.of(context).popAndPushNamed(Home.routeName);
+                          .editTask(id: widget.task.id, task: updatedTask);
                     },
                     title: AppLocalizations.of(context)!.savechanges,
                   ),

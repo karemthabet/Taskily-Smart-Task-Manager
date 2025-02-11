@@ -2,24 +2,25 @@
 
 // ignore_for_file: unused_local_variable
 
-import 'dart:developer';
-
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/UI/Models/task_model.dart';
 import 'package:todo_app/UI/Models/user_data_model.dart';
 import 'package:todo_app/UI/Screens/home.dart';
+import 'package:todo_app/UI/utils/app_colors.dart';
 import 'package:todo_app/UI/utils/constants%20_managers.dart';
-import 'package:todo_app/UI/utils/diaglogs.dart';
 import 'package:todo_app/provider/tasks_provider.dart';
 import 'package:todo_app/views/sign%20in_screen/sign_in.dart';
+import 'package:todo_app/views/signup_screen/sign_up.dart';
 
 DateTime selectedDatee =
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    
 
 abstract class FirebaseServices {
   static final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -92,158 +93,333 @@ abstract class FirebaseServices {
     }
   }
 
-  static Future register(
-      UserDataModel userDataModel, String password, context) async {
+  static Future logout() async {
+    await FirebaseAuth.instance.signOut();
+    _googleSignIn.disconnect();
+  }
+
+  static Future<void> register({
+    required UserDataModel userDataModel,
+    required String password,
+    required BuildContext context,
+  }) async {
     try {
-      Diaglogs.showLoading(context, message: "Wait...");
       UserCredential credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: userDataModel.email!,
         password: password,
       );
+
       userDataModel.id = credential.user!.uid; // حفظ الـ UID
 
       await getUserCollection().doc(userDataModel.id).set(userDataModel);
 
-      Diaglogs.hide(context);
-      Diaglogs.showMessage(context,
-          body: "Account created! Please verify your email before logging in.",
-          posActionTitle: "OK", posAction: () {
-        Provider.of<TasksProvider>(context, listen: false).getTasksByDate();
-        Navigator.pushReplacementNamed(context, SignIn.routeName);
-      });
+      _showSuccessDialog(
+        context: context,
+        message: "Account created! Please verify your email before logging in.",
+        onOkPress: () {
+          Navigator.pushReplacementNamed(context, SignIn.routeName);
+        },
+      );
     } on FirebaseAuthException catch (e) {
-      Diaglogs.hide(context);
       late String message;
       if (e.code == ConstantsManagers.weekPasswordCode) {
         message = 'The password provided is too weak.';
       } else if (e.code == ConstantsManagers.emailAlreadyUse) {
         message = 'The account already exists for that email.';
+      } else {
+        message = 'No internet connection. Please check your connection and try again.';
       }
-      Diaglogs.showMessage(context,
-          title: "Error Occurred",
-          body: message,
-          posActionTitle: "OK", posAction: () {
-        Navigator.pop(context);
-      });
+
+      _showErrorDialog(
+        context: context,
+        message: message,
+        onOkPress: () {
+          Navigator.popAndPushNamed(context, SignUp.routeName);
+        },
+      );
     } catch (e) {
-      Diaglogs.hide(context);
-      Diaglogs.showMessage(context,
-          title: "Error Occurred", body: e.toString());
-      log("#####################");
+      _showWarningDialog(
+        context: context,
+        message:
+            "No internet connection. Please check your connection and try again.",
+        onOkPress: () {
+          Navigator.popAndPushNamed(context, SignUp.routeName);
+        },
+      );
     }
   }
 
-  static Future signIn(
-      UserDataModel userDataModel, String password, context) async {
-    try {
-      Diaglogs.showLoading(context, message: "Wait...");
+  static Future<bool> checkInternetConnection(BuildContext context) async {
+    var connectivityResult =
+        await InternetConnectionChecker.instance.hasConnection;
+    if (connectivityResult == ConnectivityResult.none) {
+      return false;
+    }
+    return true;
+  }
 
+  static Future<void> signIn({
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
+    try {
       UserCredential credential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: userDataModel.email!,
+        email: email,
         password: password,
       );
 
       User? user = FirebaseAuth.instance.currentUser;
-      await user?.reload(); // تحديث حالة المستخدم
+      await user?.reload();
       user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
         if (user.emailVerified) {
-          Diaglogs.hide(context);
-          Diaglogs.showMessage(context,
-              body: "User logged in successfully",
-              posActionTitle: "OK", posAction: () {
-            Provider.of<TasksProvider>(context, listen: false).getTasksByDate();
-            Navigator.popAndPushNamed(context, Home.routeName);
-          });
+          _showSuccessDialog(
+            context: context,
+            message: "User logged in successfully",
+            onOkPress: () {
+              Provider.of<TasksProvider>(context, listen: false)
+                  .getTasksByDate();
+              Navigator.popAndPushNamed(context, Home.routeName);
+            },
+          );
         } else {
-          Diaglogs.hide(context);
-          Diaglogs.showMessage(context,
-              title: "Email Verification Required",
-              body:
-                  "Your email is not verified. Please verify your email before logging in.",
-              posAction: () async {
-                await user!.sendEmailVerification();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text(
-                          "Verification email sent. Please check your inbox.")),
-                );
-                Navigator.pop(context);
-              },
-              negActionTitle: "OK",
-              negAction: () {
-                Navigator.pop(context);
-              });
+          _showInfoDialog(
+            context: context,
+            message:
+                "Your email is not verified. Please verify your email before logging in.",
+            onOkPress: () =>
+                Navigator.popAndPushNamed(context, SignIn.routeName),
+          );
         }
-      } else {
-        Diaglogs.hide(context);
-        Diaglogs.showMessage(context,
-            title: "Error",
-            body: "User data not found.",
-            posActionTitle: "OK", posAction: () {
-          Navigator.pop(context);
-        });
       }
     } on FirebaseAuthException catch (e) {
-      Diaglogs.hide(context);
-      String message = "Check Your internet";
-
       if (e.code == ConstantsManagers.invalidcredential) {
-        message = "Wrong email or password";
+        _showErrorDialog(
+          context: context,
+          message: "Wrong email or password",
+          onOkPress: () => Navigator.popAndPushNamed(context, SignIn.routeName),
+        );
+      } else {
+        _showWarningDialog(
+          context: context,
+          message: "Check your internet",
+          onOkPress: () => Navigator.popAndPushNamed(context, SignIn.routeName),
+        );
+      }
+    } catch (e) {
+      {
+        _showErrorDialog(
+          context: context,
+          message: "An unexpected error occurred",
+          onOkPress: () => Navigator.popAndPushNamed(context, SignIn.routeName),
+        );
+      }
+    }
+  }
+
+  static Future<void> forgotPassword({
+    required TextEditingController emailController,
+    required BuildContext context,
+  }) async {
+    if (emailController.text.isEmpty) {
+      _showErrorDialog(
+        context: context,
+        message: "Please enter your email address",
+        onOkPress: () =>
+            Navigator.of(context).popAndPushNamed(SignIn.routeName),
+      );
+      return;
+    }
+
+    if (!emailRegExp.hasMatch(emailController.text)) {
+      _showErrorDialog(
+        context: context,
+        message: "Please enter a valid email address",
+        onOkPress: () =>
+            Navigator.of(context).popAndPushNamed(SignIn.routeName),
+      );
+      return;
+    }
+
+    if (!await checkInternetConnection(context)) {
+      _showWarningDialog(
+        context: context,
+        message: "Check your internet connection",
+        onOkPress: () =>
+            Navigator.of(context).popAndPushNamed(SignIn.routeName),
+      );
+      return;
+    }
+
+    _showLoadingDialog(context);
+
+    try {
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: emailController.text);
+
+      Navigator.popAndPushNamed(context, SignIn.routeName);
+
+      _showInfoDialog(
+        context: context,
+        message: "Please check your email to reset your password",
+        onOkPress: () =>
+            Navigator.of(context).popAndPushNamed(SignIn.routeName),
+      );
+    } on FirebaseAuthException catch (e) {
+      Navigator.popAndPushNamed(context, SignIn.routeName);
+
+      String errorMessage = "An unexpected error occurred";
+
+      if (e.code == 'user-not-found') {
+        errorMessage = "No user found with this email";
+      } else if (e.code == 'invalid-email') {
+        errorMessage = "Invalid email format";
+      } else if (e.code == 'network-request-failed') {
+        errorMessage = "Check your internet connection";
       }
 
-      Diaglogs.showMessage(context,
-          title: " Error Occurred",
-          body: message,
-          posActionTitle: "OK", posAction: () {
-        Navigator.pop(context);
-      });
+      _showWarningDialog(
+        context: context,
+        message: errorMessage,
+        onOkPress: () =>
+            Navigator.of(context).popAndPushNamed(SignIn.routeName),
+      );
     } catch (e) {
-      Diaglogs.hide(context);
-      Diaglogs.showMessage(context,
-          title: "Error Occurred", body: e.toString());
+      Navigator.popAndPushNamed(context, SignIn.routeName);
+
+      _showErrorDialog(
+        context: context,
+        message: "Check your internet connection",
+        onOkPress: () =>
+            Navigator.of(context).popAndPushNamed(SignIn.routeName),
+      );
     }
   }
 
-  static Future<UserDataModel?> getUser(String userId) async {
-    try {
-      DocumentSnapshot<UserDataModel> userDoc =
-          await getUserCollection().doc(userId).get();
-
-      return userDoc.data();
-    } catch (e) {
-      throw Exception("Error fetching user data: $e");
-    }
-  }
-
-  static Future logout() async {
-    await FirebaseAuth.instance.signOut();
-    _googleSignIn.disconnect();
-  }
-static Future<void> signInWithGoogle(BuildContext context) async {
+  static Future<void> signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return;
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
-            if (FirebaseAuth.instance.currentUser != null) {
-        Navigator.popAndPushNamed(context, Home.routeName);
+      if (FirebaseAuth.instance.currentUser != null) {
+        _showSuccessDialog(
+          context: context,
+          message: "User logged in successfully",
+          onOkPress: () {
+            Provider.of<TasksProvider>(context, listen: false).getTasksByDate();
+            Navigator.popAndPushNamed(context, Home.routeName);
+          },
+        );
       }
     } catch (e) {
-      print("Error signing in with Google: $e");
+      if (!await checkInternetConnection(context)) {
+        _showWarningDialog(
+          context: context,
+          message:
+              "No internet connection. Please check your connection and try again.",
+          onOkPress: () => Navigator.popAndPushNamed(context, SignIn.routeName),
+        );
+        return;
+      }
+      _showWarningDialog(
+        context: context,
+        message:
+            "No internet connection. Please check your connection and try again.",
+        onOkPress: () => Navigator.popAndPushNamed(context, SignIn.routeName),
+      );
     }
   }
+
+  static void _showSuccessDialog({
+    required BuildContext context,
+    required String message,
+    required VoidCallback onOkPress,
+  }) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.rightSlide,
+      title: "Success",
+      desc: message,
+      btnOkOnPress: onOkPress,
+      btnOkColor: AppColors.primaryColor,
+    ).show();
+  }
+
+  static void _showInfoDialog({
+    required BuildContext context,
+    required String message,
+    required VoidCallback onOkPress,
+  }) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.info,
+      animType: AnimType.rightSlide,
+      title: "Info",
+      desc: message,
+      btnOkOnPress: onOkPress,
+      btnOkColor: AppColors.primaryColor,
+    ).show();
+  }
+
+  static void _showWarningDialog({
+    required BuildContext context,
+    required String message,
+    required VoidCallback onOkPress,
+  }) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.warning,
+      animType: AnimType.rightSlide,
+      title: "Warning",
+      desc: message,
+      btnOkOnPress: onOkPress,
+      btnOkColor: AppColors.primaryColor,
+    ).show();
+  }
+
+  static void _showLoadingDialog(BuildContext context) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.noHeader,
+      animType: AnimType.scale,
+      dismissOnTouchOutside: false,
+      dismissOnBackKeyPress: false,
+      body: Column(
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: 20),
+          const Text("Please wait...", style: TextStyle(fontSize: 16)),
+        ],
+      ),
+    ).show();
+  }
+
+  static void _showErrorDialog({
+    required BuildContext context,
+    required String message,
+    required VoidCallback onOkPress,
+  }) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.error,
+      animType: AnimType.rightSlide,
+      title: "Error",
+      desc: message,
+      btnOkOnPress: onOkPress,
+      btnOkColor: Colors.red,
+    ).show();
+  }
 }
-
-

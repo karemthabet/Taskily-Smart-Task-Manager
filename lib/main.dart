@@ -20,13 +20,14 @@ import 'package:todo_app/views/signup_screen/sign_up.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+    var isCon = await InternetConnectionChecker.instance.hasConnection;
+
 
   await CashData.cacheInitialization();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  var isCon = await InternetConnectionChecker.instance.hasConnection;
   if (!isCon) {
     FirebaseFirestore.instance.disableNetwork();
     FirebaseFirestore.instance.settings =
@@ -80,9 +81,11 @@ class _TodoAppState extends State<TodoApp> {
         SignIn.routeName: (context) => const SignIn(),
         SignUp.routeName: (context) => const SignUp(),
       },
-      initialRoute: FirebaseAuth.instance.currentUser?.uid == null
-          ? Splash.routeName
-          : Home.routeName,
+      initialRoute: FirebaseAuth.instance.currentUser == null ||
+        !(FirebaseAuth.instance.currentUser?.emailVerified ?? false)
+    ? Splash.routeName
+    : Home.routeName,
+
     );
   }
 }

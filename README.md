@@ -1,8 +1,8 @@
-# 📱 Zendo - To Do App
+# 📱 Taskily – Smart Task Manager
 
-**Zendo** is a modern and mindful To-Do app built with Flutter, designed to help you manage your daily tasks with clarity and ease.
+**Taskily** is a modern and intuitive app built with Flutter, crafted to help you manage your daily responsibilities with clarity, focus, and ease.
 
-The name *"Zendo"* is inspired by *Zen* a peaceful and focused mindset  because real productivity is not about pressure, but about flow. **Zendo** helps you stay in motion without chaos.
+The name *"Taskily"* is inspired by the words *"task"* and *"easily"* — because staying organized shouldn't be difficult. **Taskily** empowers you to take control of your day in a smooth and stylish way.
 
 ---
 
@@ -11,17 +11,18 @@ The name *"Zendo"* is inspired by *Zen* a peaceful and focused mindset  because 
 - 📝 Add, update, edit, and delete tasks  
 - ✅ Mark tasks as completed or pending  
 - 🔐 User authentication with Firebase  
-- ☁️ Cloud task storage using Firestore  
+- ☁️ Cloud-based task storage using Firestore  
 - 🔄 State management using both Provider and Cubit  
 - 🎨 Clean, responsive, and minimal UI
 
 ---
 
-## 🚀 Why Zendo?
+## 🚀 Why Taskily?
 
-Because your mind deserves peace — and **Zendo** helps you organize your day with clarity, calmness, and consistency.
+Because true productivity is about balance and clarity.  
+**Taskily** helps you organize your day, track your progress, and maintain focus — without overwhelming complexity.
 
-> *Zendo — productivity in peace.*
+> *Taskily — Manage your day, your way.*
 
 ---
 
@@ -41,5 +42,7 @@ Because your mind deserves peace — and **Zendo** helps you organize your day w
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/karemthabet/Zendo_App.git
-   cd Zendo_App
+   git clone https://github.com/karemthabet/Taskily_App.git
+   cd Taskily_App
+   flutter pub get
+   flutter run

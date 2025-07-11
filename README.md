@@ -1,16 +1,45 @@
-# todo_app
+# 📱 Zendo - To Do App
 
-A new Flutter project.
+**Zendo** is a modern and mindful To-Do app built with Flutter, designed to help you manage your daily tasks with clarity and ease.
 
-## Getting Started
+The name *"Zendo"* is inspired by *Zen* a peaceful and focused mindset  because real productivity is not about pressure, but about flow. **Zendo** helps you stay in motion without chaos.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## ✨ Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- 📝 Add, update, edit, and delete tasks  
+- ✅ Mark tasks as completed or pending  
+- 🔐 User authentication with Firebase  
+- ☁️ Cloud task storage using Firestore  
+- 🔄 State management using both Provider and Cubit  
+- 🎨 Clean, responsive, and minimal UI
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 🚀 Why Zendo?
+
+Because your mind deserves peace — and **Zendo** helps you organize your day with clarity, calmness, and consistency.
+
+> *Zendo — productivity in peace.*
+
+---
+
+## 🛠️ Tech Stack
+
+- **Flutter** & **Dart**  
+- **Firebase Authentication** – secure login/signup  
+- **Cloud Firestore** – cloud database for user tasks  
+- **SharedPreferences** – local data persistence  
+- **State Management:**  
+  - `Provider`  
+  - `Cubit`  
+
+---
+
+## 📦 Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/karemthabet/Zendo_App.git
+   cd Zendo_App

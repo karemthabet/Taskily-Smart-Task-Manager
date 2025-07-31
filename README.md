@@ -17,6 +17,14 @@ The name *"Taskily"* is inspired by the words *"task"* and *"easily"* — becaus
 
 ---
 
+## 📹 Taskily Demo
+
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/dd6b80c9-ccc5-47be-8b7b-a1108872acaa" controls width="480" style="border-radius: 12px;"></video>
+</div>
+
+---
+
 ## 🚀 Why Taskily?
 
 Because true productivity is about balance and clarity.  

@@ -13,7 +13,7 @@ The name *"Taskily"* is inspired by the words *"task"* and *"easily"* — becaus
 - 🔐 User authentication with Firebase  
 - ☁️ Cloud-based task storage using Firestore  
 - 🔄 State management using both Provider and Cubit  
-- 🎨 Clean, responsive, and minimal UI
+- 🎨 Clean, responsive, and minimal UI  
 
 ---
 
@@ -22,6 +22,19 @@ The name *"Taskily"* is inspired by the words *"task"* and *"easily"* — becaus
 <div align="center">
   <video src="https://github.com/user-attachments/assets/dd6b80c9-ccc5-47be-8b7b-a1108872acaa" controls width="480" style="border-radius: 12px;"></video>
 </div>
+
+---
+
+## 📸 Screenshots  
+
+|:------:|:-----:|:----:|
+| ![](assets/images/187shots_so.png) | ![](assets/images/349shots_so.png) | ![](assets/images/526shots_so.png) |
+
+|:---------:|:--------:|:---------:|
+| ![](assets/images/602shots_so.png) | ![](assets/images/604shots_so.png) | ![](assets/images/635shots_so.png) |
+
+|:-------:|
+| ![](assets/images/768shots_so.png) |
 
 ---
 
